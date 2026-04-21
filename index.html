@@ -92,11 +92,15 @@ select.ctrl:focus{border-color:var(--accent2)}
 .wx-btn.wx-w.active{border-color:#fb923c;color:#fdba74}
 .wx-sub{font-size:.66rem;font-weight:400;opacity:.75;display:block}
 
-/* ═══ CARDS ════════════════════════════════════════════════ */
-.cards{display:flex;flex-wrap:nowrap;gap:0;margin-bottom:14px;
+/* ═══ CARDS — 2 rows × 3 columns ═══════════════════════════ */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-bottom:14px;
   background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden}
-.card{padding:9px 10px;flex:1;min-width:0;position:relative;border-right:1px solid var(--border)}
-.card:last-child{border-right:none}
+.card{padding:9px 10px;min-width:0;position:relative;
+  border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
+/* remove right border on last of each row */
+.card:nth-child(3n){border-right:none}
+/* remove bottom border on second row */
+.card:nth-child(n+4){border-bottom:none}
 .clbl{font-size:.62rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
   color:var(--dim);margin-bottom:4px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cval{font-family:'IBM Plex Mono',monospace;font-size:1.5rem;font-weight:700;color:var(--text);line-height:1.1}
@@ -114,6 +118,15 @@ input.rain-in{background:transparent;border:none;border-bottom:2px solid #38bdf8
   width:52px;outline:none;padding:0;min-width:0}
 .rain-unit-inline{font-family:'IBM Plex Mono',monospace;font-size:1.5rem;font-weight:700;color:#38bdf8}
 
+/* Hide number input spinners — all browsers */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] { -moz-appearance: textfield; }
+
+
 /* ═══ CROP PANEL ════════════════════════════════════════════ */
 .crop-panel{background:var(--panel);border:1px solid var(--border);border-radius:10px;
   padding:13px 15px;margin-bottom:14px}
@@ -121,31 +134,27 @@ input.rain-in{background:transparent;border:none;border-bottom:2px solid #38bdf8
 .fld{display:flex;flex-direction:column;gap:4px;min-width:0}
 .fld-lbl{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:var(--dim);font-weight:700}
 .crop-desc{font-size:1.0rem;color:var(--dim);font-style:italic;margin-top:2px;display:block;opacity:.8}
+.cp-desc-row{margin-bottom:10px;padding:0 2px}
 .fld select,.fld input[type=date]{background:var(--bg);border:1px solid var(--border-hi);
   color:var(--text);padding:6px 9px;border-radius:6px;
   font-family:'IBM Plex Sans',sans-serif;font-size:.92rem;font-weight:500;outline:none}
 .fld select:focus,.fld input:focus{border-color:var(--accent2)}
 hr.div{border:none;border-top:1px solid var(--border);margin:10px 0}
 
-.kcb-inline{display:flex;align-items:center;gap:6px}
-.cp-desc-row{margin:-4px 0 10px;padding:0 2px}
-.kcb-title-simple{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;
-  color:var(--dim);font-weight:700;margin-bottom:5px;display:block}
-
 /* ── Kcb Slider ── */
 .kcb-wrap{margin-bottom:0}
 .kcb-header{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}
 .kcb-title{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;
   color:var(--dim);font-weight:700}
-.kcb-val-wrap{display:flex;align-items:center;gap:6px;margin-left:auto}
-.kcb-lbl{font-size:.78rem;color:var(--dim);font-weight:600}
-input.kcb-num{background:var(--bg);border:1px solid var(--border-hi);color:var(--accent);
-  font-family:'IBM Plex Mono',monospace;font-size:1.2rem;font-weight:700;
-  width:72px;padding:4px 7px;border-radius:6px;outline:none;text-align:center}
-input.kcb-num:focus{border-color:var(--accent)}
-[data-theme="light"] input.kcb-num{color:var(--accent2)}
-.kcb-auto-tag{font-size:.68rem;background:rgba(52,211,153,.15);color:#34d399;
-  border-radius:4px;padding:2px 6px;border:1px solid rgba(52,211,153,.3);white-space:nowrap}
+input.kcb-num{background:transparent;border:none;border-bottom:2px solid var(--accent);
+  color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:1.5rem;font-weight:700;
+  width:60px;outline:none;padding:0;min-width:0}
+input.kcb-num:focus{border-bottom-color:var(--accent2)}
+[data-theme="light"] input.kcb-num{color:var(--accent2);border-bottom-color:var(--accent2)}
+.cval.c-ks{color:#a0c8f0}
+/* Table caption */
+.tbl-caption{font-size:.72rem;color:var(--dim);letter-spacing:.04em;
+  margin-bottom:6px;padding:0 2px;font-style:italic}
 .kcb-svg-wrap{position:relative;cursor:ew-resize;user-select:none;touch-action:none}
 #kcb-svg{display:block;width:100%;overflow:visible}
 .kcb-hint{font-size:.7rem;color:var(--muted);margin-top:4px;text-align:center}
@@ -165,7 +174,6 @@ input.kcb-num:focus{border-color:var(--accent)}
   box-shadow:0 0 0 2.5px #fff,0 0 14px rgba(255,255,255,.22);
   transform:translateY(-1px)
 }
-.faw-ks-sub{font-size:.85rem;font-weight:400;opacity:.82;display:block;margin-top:1px}
 .faw-labels{display:flex;justify-content:space-between;padding:0 1px}
 .faw-edge{font-size:.66rem;font-family:'IBM Plex Mono',monospace;color:var(--muted)}
 
@@ -257,13 +265,41 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
   cursor:pointer;transition:color .12s,border-color .12s;white-space:nowrap}
 .info-btn:hover{color:var(--text);border-color:var(--dim)}
 
-@media(max-width:580px){
-  .logo h1{font-size:1.5rem}
-  td.et-cell{width:44px;min-width:40px;font-size:.88rem}
-  .cards{grid-template-columns:1fr 1fr}
-  .cp-top{gap:8px}
-  .fld select,.fld input[type=date]{min-width:0;width:100%}
+/* ═══ RESPONSIVE ════════════════════════════════════════════ */
+
+/* Tablet — tighten up moderately */
+@media(max-width:680px){
+  .logo h1{font-size:1.6rem}
+  .cval{font-size:1.1rem}
+  input.rain-in{font-size:1.1rem;width:44px}
+  .rain-unit-inline{font-size:1.1rem}
+  input.kcb-num{font-size:1.1rem;width:48px}
 }
+
+/* Phone — aggressive compaction */
+@media(max-width:480px){
+  .app{padding:12px 10px 32px}
+  .logo h1{font-size:1.4rem}
+  .hdr-r{gap:5px}
+  /* Cards: value + unit must fit in ~118px card (3-col in ~375px) */
+  .card{padding:7px 6px}
+  .clbl{font-size:.58rem;letter-spacing:.02em}
+  .cval{font-size:.9rem}
+  .csub{font-size:.58rem}
+  input.rain-in{font-size:.9rem;width:36px}
+  .rain-unit-inline{font-size:.9rem}
+  /* Kcb card input matches card font size */
+  input.kcb-num{font-size:.9rem;width:44px;border-bottom-width:1.5px}
+  /* FAW bar */
+  .faw-btn{padding:7px 2px;font-size:.9rem}
+  .faw-btn.wide{font-size:.9rem}
+  /* ET cell */
+  td.et-cell{width:44px;min-width:40px;font-size:.88rem}
+  /* Weather row */
+  .wx-btn{padding:5px 10px;font-size:.78rem}
+  .wx-sub{font-size:.62rem}
+}
+
 </style>
 </head>
 <body>
@@ -287,7 +323,7 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
       <button class="seg-btn" id="btn-mm" onclick="setUnit('mm')">mm</button>
     </div>
     <button class="icon-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle light/dark">🌙</button>
-    <button class="info-btn" onclick="document.getElementById('tos-modal').style.display='flex'">ℹ About</button>
+    <button class="info-btn" onclick="document.getElementById('tos-modal').style.display='flex'">ℹ</button>
   </div>
 </header>
 
@@ -313,27 +349,38 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
   <button class="wx-btn wx-w" id="wx-2" onclick="setWeather(2)">☀ Warmer<span class="wx-sub">+10% ET</span></button>
 </div>
 
-<!-- INFO CARDS — workflow: ETo → Kc → ETc − Precip → Irrigation -->
+<!-- INFO CARDS — 2×3 grid: [ETo | Kcb | Ks] / [ETc | Rain | Irrigation] -->
 <div class="cards">
+  <!-- Row 1 -->
   <div class="card">
     <div class="clbl">Reference ET</div>
     <div class="cval c-eto" id="c-eto">—</div>
     <div class="csub">past 7 days</div>
   </div>
   <div class="card">
-    <div class="clbl">Crop coefficient</div>
-    <div class="cval c-kc" id="c-kc">—</div>
-    <div class="csub" id="c-kc-sub"></div>
+    <div class="clbl">K<sub>cb</sub> — crop coeff.</div>
+    <div class="rain-row">
+      <input class="kcb-num" type="number" id="kcb-num" min="0" max="1.50" step="0.01"
+             oninput="onKcbNumInput();saveState()">
+    </div>
+    <div class="csub">drag curve or edit</div>
   </div>
+  <div class="card">
+    <div class="clbl">K<sub>s</sub> — water stress</div>
+    <div class="cval c-ks" id="c-ks">—</div>
+    <div class="csub" id="c-ks-sub">set below</div>
+  </div>
+  <!-- Row 2 -->
   <div class="card">
     <div class="clbl">Crop ET</div>
     <div class="cval c-etc" id="c-etc">—</div>
-    <div class="csub">ET × K<sub>c</sub></div>
+    <div class="csub" id="c-etc-sub">ET × Kcb × Ks</div>
   </div>
   <div class="card">
-    <div class="clbl">Rainfall</div>
+    <div class="clbl">Rainfall (EDIT)</div>
     <div class="rain-row">
-      <input class="rain-in" type="number" id="rain-in" min="0" step="0.01" value="0" oninput="renderCards();saveState()">
+      <input class="rain-in" type="number" id="rain-in" min="0" step="0.01" value="0"
+             oninput="renderCards();saveState()">
       <span class="rain-unit-inline" id="rain-unit-inline">in</span>
     </div>
     <div class="csub">past 7 days</div>
@@ -355,13 +402,6 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
     <div class="fld">
       <span class="fld-lbl" id="date-lbl">Planting Date</span>
       <input type="date" id="plant-date" onchange="onDateChange()">
-    </div>
-    <div class="fld">
-      <span class="fld-lbl">K<sub>cb</sub></span>
-      <div class="kcb-inline">
-        <input class="kcb-num" type="number" id="kcb-num" min="0" max="1.50" step="0.01" oninput="onKcbNumInput()">
-        <span class="kcb-auto-tag" id="kcb-auto-tag" style="display:none">auto</span>
-      </div>
     </div>
   </div>
   <div class="cp-desc-row">
@@ -390,13 +430,14 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
       <div class="faw-track" id="faw-track"></div>
       <div class="faw-labels">
         <span class="faw-edge" style="color: var(--text);">← Wilting Point</span>
-        <span class="faw-edge" style="color: var(--text);">Field Capacity →</span>
+        <span class="faw-edge" style="color: var(--text);">≥ 50% PAW = well watered →</span>
       </div>
     </div>
   </div>
 </div>
 
 <!-- TABLE -->
+<div class="tbl-caption">Typical cumulative reference ET (ET<sub>o</sub>) for the preceding 7 days &mdash; <span id="caption-county"></span></div>
 <div class="tbl-outer">
   <table id="et-table">
     <thead><tr id="thead-r"></tr></thead>
@@ -573,12 +614,12 @@ const STATES = {
 //  Ks = min(1, frac / 0.5) — linear stress below 50% PAW
 // ═══════════════════════════════════════════════════════════
 const FAW = [
-  { frac:0.0, label:'WP',  ksLabel:'Ks = 0.0', ks:0.00, color:'#991b1b', wide:false },
-  { frac:0.1, label:'10%', ksLabel:'Ks = 0.2', ks:0.20, color:'#c2410c', wide:false },
-  { frac:0.2, label:'20%', ksLabel:'Ks = 0.4', ks:0.40, color:'#d97706', wide:false },
-  { frac:0.3, label:'30%', ksLabel:'Ks = 0.6', ks:0.60, color:'#a16207', wide:false },
-  { frac:0.4, label:'40%', ksLabel:'Ks = 0.8', ks:0.80, color:'#4d7c0f', wide:false },
-  { frac:1.0, label:'Well Watered', ksLabel:'≥ 50% PAW · Ks = 1.0', ks:1.00, color:'#15803d', wide:true },
+  { frac:0.0, label:'WP',     ks:0.00, color:'#991b1b', wide:false },
+  { frac:0.1, label:'10%',    ks:0.20, color:'#c2410c', wide:false },
+  { frac:0.2, label:'20%',    ks:0.40, color:'#d97706', wide:false },
+  { frac:0.3, label:'30%',    ks:0.60, color:'#a16207', wide:false },
+  { frac:0.4, label:'40%',    ks:0.80, color:'#4d7c0f', wide:false },
+  { frac:1.0, label:'≥ 50%',  ks:1.00, color:'#15803d', wide:true  },
 ];
 
 const WX = [0.90, 1.00, 1.10];
@@ -907,7 +948,6 @@ function setupKcbDrag(){
     S.kcbDap=dap; S.kcbOverride=null; S.kcbManual=true;
     const v=kcbAtDap(S.crop,dap);
     if(v!=null) document.getElementById('kcb-num').value=v.toFixed(2);
-    document.getElementById('kcb-auto-tag').style.display='none';
     drawKcbCurve(); renderCards(); saveState();
   }
   wrap.addEventListener('mousedown',e=>{dragging=true;apply(dapFromX(e.clientX));e.preventDefault();});
@@ -923,8 +963,6 @@ function onKcbNumInput(){
   if(isNaN(v)||v<0) return;
   S.kcbOverride=Math.min(1.50,v);
   S.kcbManual=true;
-  document.getElementById('kcb-auto-tag').style.display='none';
-  // Find closest DAP on curve for visualization
   const crop=CROPS[S.crop];
   const total = cropTotalDays(crop);
   let bestDap=0, bestDiff=999;
@@ -944,7 +982,6 @@ function autoPositionKcb(){
     S.kcbDap=dap; S.kcbOverride=null; S.kcbManual=false;
     const v=kcbAtDap(S.crop,dap);
     if(v!=null) document.getElementById('kcb-num').value=v.toFixed(2);
-    document.getElementById('kcb-auto-tag').style.display='';
     document.getElementById('kcb-hint').textContent=
       `Day ${dap} after ${crop.dateLabel.toLowerCase()} · drag to adjust`;
   } else {
@@ -952,7 +989,6 @@ function autoPositionKcb(){
     S.kcbDap=midDap; S.kcbOverride=null;
     const v=kcbAtDap(S.crop,midDap);
     if(v!=null) document.getElementById('kcb-num').value=v.toFixed(2);
-    document.getElementById('kcb-auto-tag').style.display='none';
     document.getElementById('kcb-hint').textContent='Set a planting date for automatic positioning · drag to adjust';
   }
 }
@@ -967,7 +1003,7 @@ function buildFAWBtns(){
     const btn = document.createElement('button');
     btn.className = 'faw-btn' + (f.wide ? ' wide' : '') + (i === S.fPAWIdx ? ' active' : '');
     btn.style.backgroundColor = f.color;
-    btn.innerHTML = `${f.label}<span class="faw-ks-sub">${f.ksLabel}</span>`;
+    btn.innerHTML = `${f.label}`;
     btn.onclick = () => { S.fPAWIdx = i; buildFAWBtns(); renderCards(); saveState(); };
     track.appendChild(btn);
   });
@@ -985,22 +1021,26 @@ function renderCards(){
   const irr=etcDisp!=null ? Math.max(0,etcDisp-rain) : null;
   const dp=S.unit==='mm'?1:2, u=S.unit==='mm'?'mm':'in';
 
-  // ETo
-  document.getElementById('c-eto').textContent=fmtU(eto);
+  // Reference ET
+  document.getElementById('c-eto').textContent = fmtU(eto);
 
-  // Kc card
-  const kcEl=document.getElementById('c-kc');
-  const kcSubEl=document.getElementById('c-kc-sub');
-  if(kc!=null){
-    kcEl.className='cval c-kc';
-    kcEl.textContent=kc.toFixed(3);
-    kcSubEl.textContent = kcb!=null ? `Kcb ${kcb.toFixed(2)} × Ks ${ks.toFixed(2)}  [${FAW[S.fPAWIdx].label}]` : '';
-  } else {
-    kcEl.className='cval c-none'; kcEl.textContent='—'; kcSubEl.textContent='';
-  }
+  // Kcb card — input is editable; update value only if not currently focused
+  const kcbInput = document.getElementById('kcb-num');
+  if(kcb!=null && document.activeElement !== kcbInput)
+    kcbInput.value = kcb.toFixed(2);
 
-  // ETc
-  document.getElementById('c-etc').textContent=fmtU(etc);
+  // Ks card — read-only, derived from FAW selection
+  const ksEl = document.getElementById('c-ks');
+  const ksSub = document.getElementById('c-ks-sub');
+  ksEl.textContent = ks.toFixed(2);
+  ksEl.className = 'cval c-ks';
+  ksSub.textContent = FAW[S.fPAWIdx].label + (S.fPAWIdx===5 ? ' PAW · no stress' : ' PAW');
+
+  // Crop ET
+  document.getElementById('c-etc').textContent = fmtU(etc);
+  document.getElementById('c-etc-sub').textContent = kcb!=null
+    ? `Kcb ${kcb.toFixed(2)} · Ks ${ks.toFixed(2)}`
+    : 'ET × Kcb × Ks';
 
   // Rain unit label (inline)
   document.getElementById('rain-unit-inline').textContent = S.unit==='mm' ? 'mm' : 'in';
@@ -1014,7 +1054,7 @@ function renderCards(){
     irrSub.textContent=irr>0 ? `${fmtU(etc)} − ${rain.toFixed(dp)} ${u}` : 'Precip ≥ crop demand';
   } else {
     irrEl.className='cval c-none'; irrEl.textContent='—';
-    irrSub.textContent='ETc − precip';
+    irrSub.textContent='crop ET − rain';
   }
 }
 
@@ -1082,6 +1122,9 @@ function renderChart(){
   const lc=isDark?'#d8d8f8':'#2020c0';               // median line
   const maxY=S.unit==='mm'?50:2.0;
 
+  const chartFontSz = window.innerWidth < 500 ? 10 : 12;
+  const axisTitleSz = window.innerWidth < 500 ? 11 : 13;
+
   const traces=[
     {x:[...wks,...wks.slice().reverse()],y:[...q3,...q1.slice().reverse()],
       fill:'toself',fillcolor:isDark?'rgba(160,140,220,.18)':'rgba(80,80,200,.10)',
@@ -1093,25 +1136,30 @@ function renderChart(){
       name:`Today (wk ${todayWk})`,
       hovertemplate:`Week ${todayWk} (today)<br>Reference ET: %{y:.${S.unit==='mm'?1:2}f} ${ul}<extra></extra>`}
   ];
+  const chartH = window.innerWidth < 500
+    ? Math.round(window.innerWidth * 0.55)
+    : 340;
+
   const layout={
+    height: chartH,
     paper_bgcolor:bg, plot_bgcolor:bg,
-    font:{color:tickColor, family:"'IBM Plex Sans',sans-serif", size:12},
+    font:{color:tickColor, family:"'IBM Plex Sans',sans-serif", size:chartFontSz},
     xaxis:{
-      title:{text:'Week', font:{size:13, color:axisTitle}, standoff:8},
+      title:{text:'Week', font:{size:axisTitleSz, color:axisTitle}, standoff:6},
       gridcolor:grid, gridwidth:1, zeroline:false,
-      tickmode:'array', tickvals:[1,5,9,13,17,21,25,29,33,37,41,45,49],
-      range:[.5,52.5], tickfont:{size:12,color:tickColor},
+      tickmode:'array', tickvals:[1,9,17,25,33,41,49],
+      range:[.5,52.5], tickfont:{size:chartFontSz,color:tickColor},
       showline:false, ticklen:4
     },
     yaxis:{
-      title:{text:`Reference ET (${ul})`, font:{size:13, color:axisTitle}, standoff:8},
+      title:{text:`Reference ET (${ul})`, font:{size:axisTitleSz, color:axisTitle}, standoff:6},
       gridcolor:grid, gridwidth:1, zeroline:false, range:[0,maxY],
-      tickfont:{size:12,color:tickColor},
+      tickfont:{size:chartFontSz,color:tickColor},
       tickformat:S.unit==='mm'?'.0f':'.1f', showline:false, ticklen:4
     },
-    legend:{x:.01,y:.98,bgcolor:'rgba(0,0,0,0)',font:{size:11,color:tickColor},
+    legend:{x:.01,y:.98,bgcolor:'rgba(0,0,0,0)',font:{size:chartFontSz,color:tickColor},
       bordercolor:isDark?'rgba(130,130,200,.25)':'#d0d0e8',borderwidth:1},
-    margin:{t:12,b:50,l:62,r:14}, hovermode:'x unified',
+    margin:{t:12,b:window.innerWidth<500?40:50,l:window.innerWidth<500?52:62,r:12}, hovermode:'x unified',
     shapes:[{type:'line',x0:todayWk,x1:todayWk,y0:0,y1:maxY,
       line:{color:isDark?'rgba(255,255,255,.22)':'rgba(0,0,80,.18)',width:1.5,dash:'dot'}}]
   };
@@ -1218,6 +1266,7 @@ function onCountyChange(){
   const stLabel = STATES[S.state]?.label || S.state;
   document.getElementById('footer').textContent =
     `ET7 · ${S.county} County, ${stLabel} · KSU Soil Water Processes Lab · Climate data: GRIDMET`;
+  document.getElementById('caption-county').textContent = `${S.county} County, ${stLabel}`;
   saveState();
   render();
 }
@@ -1275,7 +1324,7 @@ async function init(){
 
   setupKcbDrag();
   buildFAWBtns();
-  window.addEventListener('resize', ()=>{ drawKcbCurve(); });
+  window.addEventListener('resize', ()=>{ drawKcbCurve(); renderChart(); });
 
   // Show terms modal on first visit
   if(!sessionStorage.getItem('tos-accepted')){
@@ -1292,6 +1341,7 @@ async function init(){
     const stLabel = STATES[S.state]?.label || S.state;
     document.getElementById('footer').textContent =
       `ET7 · ${S.county} County, ${stLabel} · KSU Soil Water Processes Lab · Climate data: GRIDMET`;
+    document.getElementById('caption-county').textContent = `${S.county} County, ${stLabel}`;
   }
 
   // Restore rain input
