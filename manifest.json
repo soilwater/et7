@@ -1,0 +1,33 @@
+{
+  "name": "ET7 — Kansas Irrigation ET Tool",
+  "short_name": "ET7",
+  "description": "7-day cumulative evapotranspiration for irrigation scheduling in Kansas",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#06060e",
+  "theme_color": "#06060e",
+  "categories": ["agriculture", "utilities", "weather"],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Today's ET",
+      "short_name": "Today",
+      "description": "Open ET7 to today's reference ET",
+      "url": "./index.html"
+    }
+  ]
+}
