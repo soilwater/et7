@@ -433,6 +433,7 @@ const etStore = {};
 const CROPS = {
   corn_full: {
     name:'Corn',
+    winterCrop: false, 
     description:'Full season · typical Kansas',
     dateLabel:'Planting Date', defaultDate:'04-15',
     stages:[
@@ -453,6 +454,7 @@ const CROPS = {
   },
   soybean: {
     name:'Soybean',
+    winterCrop: false, 
     description:'Indeterminate varieties · Groups III–V',
     dateLabel:'Planting Date', defaultDate:'05-20',
     stages:[
@@ -472,6 +474,7 @@ const CROPS = {
   },
 winterWheat: {
   name:'Winter Wheat',
+  winterCrop: true,
   description:'Hard red winter · typical Great Plains',
   dateLabel:'Seeding Date', defaultDate:'10-10',
   stages:[
@@ -493,6 +496,7 @@ winterWheat: {
 },
   sorghum: {
     name:'Grain Sorghum',
+    winterCrop: false,
     description:'Full-season grain sorghum',
     dateLabel:'Planting Date', defaultDate:'06-01',
     stages:[
@@ -512,6 +516,7 @@ winterWheat: {
   },
   sunflower: {
     name:'Sunflower',
+    winterCrop: false,
     description:'Oilseed sunflower · standard season',
     dateLabel:'Planting Date', defaultDate:'06-01',
     stages:[
@@ -731,12 +736,12 @@ function renderLegend(mn,mx){
 // ═══════════════════════════════════════════════════════════
 //  Kcb SVG CURVE SLIDER
 // ═══════════════════════════════════════════════════════════
-const KP={t:56,b:28,l:30,r:8};
+const KP={t:80,b:28,l:30,r:8};
 
 function drawKcbCurve(){
   const svg=document.getElementById('kcb-svg');
   const wrap=document.getElementById('kcb-svg-wrap');
-  const W=wrap.clientWidth||400, H=168;
+  const W=wrap.clientWidth||400, H=250;
   svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
   svg.style.height=H+'px';
 
@@ -788,18 +793,17 @@ function drawKcbCurve(){
 
   // ── PHENOLOGICAL STAGE LINES (behind curve) ──────────────
   const stages = crop.stages;
-  const rowY = [KP.t - 4, KP.t - 20];
+  const rowY = [KP.t - 6, KP.t - 6];
   stages.forEach((st, i) => {
     if(st.dap < 0 || st.dap > total) return;
     const x = xS(st.dap);
     const row = i % 2;
     const ly = rowY[row];
+
     // dashed vertical line
-    out += `<line x1="${x.toFixed(1)}" y1="${KP.t}" x2="${x.toFixed(1)}" y2="${(H-KP.b).toFixed(1)}"
+    out += `<line x1="${x.toFixed(1)}" y1="${(KP.t).toFixed(1)}" x2="${x.toFixed(1)}" y2="${(H-KP.b).toFixed(1)}"
       stroke="${stageLineColor}" stroke-width="1.1" stroke-dasharray="3,3"/>`;
-    // small tick above plot area indicating label row
-    out += `<line x1="${x.toFixed(1)}" y1="${KP.t}" x2="${x.toFixed(1)}" y2="${(ly+1).toFixed(1)}"
-      stroke="${stageLineColor}" stroke-width="1" opacity="0.6"/>`;
+
     // rotated label: rotate -90° around (x, ly) so text goes upward
     out += `<text
       x="${x.toFixed(1)}" y="${ly.toFixed(1)}"
@@ -1162,10 +1166,14 @@ function onCropChange(){
   document.getElementById('date-lbl').textContent = crop.dateLabel;
   document.getElementById('crop-desc').textContent = crop.description;
   const yr = today.getFullYear();
-  //const dateStr = `${yr}-${crop.defaultDate}`;
-  const [mo, dy] = crop.defaultDate.split('-').map(Number);
-  const candidateDate = new Date(yr, mo - 1, dy);
-  const plantYr = candidateDate > today ? yr - 1 : yr;
+  const isWinter = !!CROPS[S.crop].winterCrop;
+  let plantYr;
+  if(isWinter){
+    // Jan–Jul → planted previous fall; Aug–Dec → planted this fall
+    plantYr = today.getMonth() < 7 ? yr - 1 : yr;
+  } else {
+    plantYr = yr;
+  }
   const dateStr = `${plantYr}-${crop.defaultDate}`;
   
   document.getElementById('plant-date').value = dateStr;
