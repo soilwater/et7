@@ -1162,7 +1162,12 @@ function onCropChange(){
   document.getElementById('date-lbl').textContent = crop.dateLabel;
   document.getElementById('crop-desc').textContent = crop.description;
   const yr = today.getFullYear();
-  const dateStr = `${yr}-${crop.defaultDate}`;
+  //const dateStr = `${yr}-${crop.defaultDate}`;
+  const [mo, dy] = crop.defaultDate.split('-').map(Number);
+  const candidateDate = new Date(yr, mo - 1, dy);
+  const plantYr = candidateDate > today ? yr - 1 : yr;
+  const dateStr = `${plantYr}-${crop.defaultDate}`;
+  
   document.getElementById('plant-date').value = dateStr;
   S.plantDate = new Date(dateStr + 'T00:00:00');
   S.kcbManual = false; S.kcbOverride = null;
