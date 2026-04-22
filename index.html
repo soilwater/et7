@@ -41,7 +41,7 @@
 
 html{font-size:14px;background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',system-ui,sans-serif;transition:background .2s,color .2s}
 body{min-height:100vh}
-.app{max-width:1010px;margin:0 auto;padding:16px 13px 40px}
+.app{max-width:560px;margin:0 auto;padding:16px 13px 40px}
 
 /* ═══ HEADER ═══════════════════════════════════════════════ */
 header{display:flex;align-items:center;justify-content:space-between;
@@ -92,31 +92,34 @@ select.ctrl:focus{border-color:var(--accent2)}
 .wx-btn.wx-w.active{border-color:#fb923c;color:#fdba74}
 .wx-sub{font-size:.66rem;font-weight:400;opacity:.75;display:block}
 
-/* ═══ CARDS — 2 rows × 3 columns ═══════════════════════════ */
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-bottom:14px;
+/* ═══ CARDS — stacked vertical, full width, mobile-first ═══ */
+.cards{display:flex;flex-direction:column;gap:0;margin-bottom:16px;
   background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden}
-.card{padding:9px 10px;min-width:0;position:relative;
-  border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
-/* remove right border on last of each row */
-.card:nth-child(3n){border-right:none}
-/* remove bottom border on second row */
-.card:nth-child(n+4){border-bottom:none}
-.clbl{font-size:.62rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
-  color:var(--dim);margin-bottom:4px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cval{font-family:'IBM Plex Mono',monospace;font-size:1.5rem;font-weight:700;color:var(--text);line-height:1.1}
+.card{padding:13px 16px;display:flex;align-items:center;justify-content:space-between;
+  gap:12px;border-bottom:1px solid var(--border)}
+.card:last-child{border-bottom:none}
+.card-left{display:flex;flex-direction:column;gap:2px;min-width:0}
+.clbl{font-size:.8rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--dim);line-height:1.2}
+.csub{font-size:.72rem;color:var(--muted);margin-top:2px;
+  font-family:'IBM Plex Mono',monospace;font-weight:500}
+.cval{font-family:'IBM Plex Mono',monospace;font-size:1.7rem;font-weight:700;
+  color:var(--text);line-height:1;white-space:nowrap}
 .cval.c-eto{color:var(--accent)}
-.cval.c-kc{color:#e0c060}
 .cval.c-etc{color:#b090ff}
 .cval.c-irr{color:#34d399}
 .cval.c-none{color:var(--muted)}
-.csub{font-size:.65rem;color:var(--dim);margin-top:3px;font-family:'IBM Plex Mono',monospace;font-weight:500;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-/* rain row: input + unit inline, same color */
-.rain-row{display:flex;align-items:baseline;gap:4px}
+/* rain row: input + unit inline */
+.rain-row{display:flex;align-items:baseline;gap:5px}
 input.rain-in{background:transparent;border:none;border-bottom:2px solid #38bdf8;
-  color:#38bdf8;font-family:'IBM Plex Mono',monospace;font-size:1.5rem;font-weight:700;
-  width:52px;outline:none;padding:0;min-width:0}
-.rain-unit-inline{font-family:'IBM Plex Mono',monospace;font-size:1.5rem;font-weight:700;color:#38bdf8}
+  color:#38bdf8;font-family:'IBM Plex Mono',monospace;font-size:1.7rem;font-weight:700;
+  width:65px;outline:none;padding:0;min-width:0;text-align:right}
+.rain-unit-inline{font-family:'IBM Plex Mono',monospace;font-size:1.7rem;font-weight:700;color:#38bdf8}
+/* Table caption */
+.tbl-caption{font-size:.9rem;color:var(--dim);letter-spacing:.02em;
+  margin-bottom:8px;padding:0 2px;line-height:1.6}
+.caption-county{display:block;font-size:.78rem;color:var(--muted);margin-top:1px;
+  font-family:'IBM Plex Mono',monospace}
 
 /* Hide number input spinners — all browsers */
 input[type=number]::-webkit-outer-spin-button,
@@ -147,35 +150,13 @@ hr.div{border:none;border-top:1px solid var(--border);margin:10px 0}
 .kcb-title{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;
   color:var(--dim);font-weight:700}
 input.kcb-num{background:transparent;border:none;border-bottom:2px solid var(--accent);
-  color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:1.5rem;font-weight:700;
-  width:60px;outline:none;padding:0;min-width:0}
+  color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:1.7rem;font-weight:700;
+  width:70px;outline:none;padding:0;min-width:0;text-align:right}
 input.kcb-num:focus{border-bottom-color:var(--accent2)}
 [data-theme="light"] input.kcb-num{color:var(--accent2);border-bottom-color:var(--accent2)}
-.cval.c-ks{color:#a0c8f0}
-/* Table caption */
-.tbl-caption{font-size:.72rem;color:var(--dim);letter-spacing:.04em;
-  margin-bottom:6px;padding:0 2px;font-style:italic}
 .kcb-svg-wrap{position:relative;cursor:ew-resize;user-select:none;touch-action:none}
 #kcb-svg{display:block;width:100%;overflow:visible}
 .kcb-hint{font-size:.7rem;color:var(--muted);margin-top:4px;text-align:center}
-
-/* FAW moisture bar */
-.faw-wrap{display:flex;flex-direction:column;gap:5px}
-.faw-track{display:flex;gap:3px;align-items:stretch}
-.faw-btn{
-  flex:1;padding:8px 4px;border:2px solid transparent;border-radius:6px;
-  cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:1.25rem;font-weight:500;
-  color:#fff;transition:transform .1s,box-shadow .1s,filter .1s;
-  text-align:center;line-height:1.2;white-space:nowrap;min-width:0
-}
-.faw-btn.wide{flex:2.2;font-size:1.25rem}
-.faw-btn:hover{filter:brightness(1.2);transform:translateY(-1px)}
-.faw-btn.active{
-  box-shadow:0 0 0 2.5px #fff,0 0 14px rgba(255,255,255,.22);
-  transform:translateY(-1px)
-}
-.faw-labels{display:flex;justify-content:space-between;padding:0 1px}
-.faw-edge{font-size:.66rem;font-family:'IBM Plex Mono',monospace;color:var(--muted)}
 
 /* ═══ TABLE ════════════════════════════════════════════════ */
 .tbl-outer{overflow-x:auto;margin-bottom:18px;border-radius:9px;
@@ -266,38 +247,11 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
 .info-btn:hover{color:var(--text);border-color:var(--dim)}
 
 /* ═══ RESPONSIVE ════════════════════════════════════════════ */
-
-/* Tablet — tighten up moderately */
-@media(max-width:680px){
-  .logo h1{font-size:1.6rem}
-  .cval{font-size:1.1rem}
-  input.rain-in{font-size:1.1rem;width:44px}
-  .rain-unit-inline{font-size:1.1rem}
-  input.kcb-num{font-size:1.1rem;width:48px}
-}
-
-/* Phone — aggressive compaction */
-@media(max-width:480px){
-  .app{padding:12px 10px 32px}
-  .logo h1{font-size:1.4rem}
-  .hdr-r{gap:5px}
-  /* Cards: value + unit must fit in ~118px card (3-col in ~375px) */
-  .card{padding:7px 6px}
-  .clbl{font-size:.58rem;letter-spacing:.02em}
-  .cval{font-size:.9rem}
-  .csub{font-size:.58rem}
-  input.rain-in{font-size:.9rem;width:36px}
-  .rain-unit-inline{font-size:.9rem}
-  /* Kcb card input matches card font size */
-  input.kcb-num{font-size:.9rem;width:44px;border-bottom-width:1.5px}
-  /* FAW bar */
-  .faw-btn{padding:7px 2px;font-size:.9rem}
-  .faw-btn.wide{font-size:.9rem}
-  /* ET cell */
-  td.et-cell{width:44px;min-width:40px;font-size:.88rem}
-  /* Weather row */
-  .wx-btn{padding:5px 10px;font-size:.78rem}
-  .wx-sub{font-size:.62rem}
+@media(max-width:400px){
+  .app{padding:10px 10px 28px}
+  .logo h1{font-size:1.5rem}
+  td.et-cell{width:40px;min-width:36px;font-size:.82rem}
+  .wx-btn{padding:5px 9px;font-size:.78rem}
 }
 
 </style>
@@ -349,46 +303,47 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
   <button class="wx-btn wx-w" id="wx-2" onclick="setWeather(2)">☀ Warmer<span class="wx-sub">+10% ET</span></button>
 </div>
 
-<!-- INFO CARDS — 2×3 grid: [ETo | Kcb | Ks] / [ETc | Rain | Irrigation] -->
+<!-- INFO CARDS — stacked, label left / value right -->
 <div class="cards">
-  <!-- Row 1 -->
   <div class="card">
-    <div class="clbl">Reference ET</div>
-    <div class="cval c-eto" id="c-eto">—</div>
-    <div class="csub">past 7 days</div>
-  </div>
-  <div class="card">
-    <div class="clbl">K<sub>cb</sub> — crop coeff.</div>
-    <div class="rain-row">
-      <input class="kcb-num" type="number" id="kcb-num" min="0" max="1.50" step="0.01"
-             oninput="onKcbNumInput();saveState()">
+    <div class="card-left">
+      <div class="clbl">Reference ET</div>
+      <div class="csub">past 7 days</div>
     </div>
-    <div class="csub">drag curve or edit</div>
+    <div class="cval c-eto" id="c-eto">—</div>
   </div>
   <div class="card">
-    <div class="clbl">K<sub>s</sub> — water stress</div>
-    <div class="cval c-ks" id="c-ks">—</div>
-    <div class="csub" id="c-ks-sub">set below</div>
+    <div class="card-left">
+      <div class="clbl">Crop coefficient K<sub>cb</sub></div>
+      <div class="csub">drag curve or edit</div>
+    </div>
+    <input class="kcb-num" type="number" id="kcb-num" min="0" max="1.50" step="0.01"
+           oninput="onKcbNumInput();saveState()">
   </div>
-  <!-- Row 2 -->
   <div class="card">
-    <div class="clbl">Crop ET</div>
+    <div class="card-left">
+      <div class="clbl">Crop ET</div>
+      <div class="csub" id="c-etc-sub">ET × Kcb</div>
+    </div>
     <div class="cval c-etc" id="c-etc">—</div>
-    <div class="csub" id="c-etc-sub">ET × Kcb × Ks</div>
   </div>
   <div class="card">
-    <div class="clbl">Rainfall (EDIT)</div>
+    <div class="card-left">
+      <div class="clbl">Rainfall</div>
+      <div class="csub">past 7 days · enter total</div>
+    </div>
     <div class="rain-row">
       <input class="rain-in" type="number" id="rain-in" min="0" step="0.01" value="0"
              oninput="renderCards();saveState()">
       <span class="rain-unit-inline" id="rain-unit-inline">in</span>
     </div>
-    <div class="csub">past 7 days</div>
   </div>
   <div class="card">
-    <div class="clbl">Est. Irrigation</div>
+    <div class="card-left">
+      <div class="clbl">Est. Irrigation</div>
+      <div class="csub" id="c-irr-sub">crop ET − rain</div>
+    </div>
     <div class="cval" id="c-irr">—</div>
-    <div class="csub" id="c-irr-sub">crop ET − rain</div>
   </div>
 </div>
 
@@ -421,23 +376,10 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
     <div class="kcb-hint" id="kcb-hint">Set a planting date for automatic positioning</div>
   </div>
 
-  <hr class="div">
-
-  <!-- Soil Moisture / FAW -->
-  <div>
-    <div class="fld-lbl" style="margin-bottom:7px">Plant Available Water</div>
-    <div class="faw-wrap">
-      <div class="faw-track" id="faw-track"></div>
-      <div class="faw-labels">
-        <span class="faw-edge" style="color: var(--text);">← Wilting Point</span>
-        <span class="faw-edge" style="color: var(--text);">≥ 50% PAW = well watered →</span>
-      </div>
-    </div>
-  </div>
 </div>
 
 <!-- TABLE -->
-<div class="tbl-caption">Typical cumulative reference ET (ET<sub>o</sub>) for the preceding 7 days &mdash; <span id="caption-county"></span></div>
+<div class="tbl-caption">Typical weekly ET₀ (short-grass reference) &mdash; past 7 days<span class="caption-county" id="caption-county"></span></div>
 <div class="tbl-outer">
   <table id="et-table">
     <thead><tr id="thead-r"></tr></thead>
@@ -609,19 +551,6 @@ const STATES = {
   // CO: { label:'Colorado', file:'co_data.json' },
 };
 
-// ═══════════════════════════════════════════════════════════
-//  FAW — Fraction of Plant-Available Water levels
-//  Ks = min(1, frac / 0.5) — linear stress below 50% PAW
-// ═══════════════════════════════════════════════════════════
-const FAW = [
-  { frac:0.0, label:'WP',     ks:0.00, color:'#991b1b', wide:false },
-  { frac:0.1, label:'10%',    ks:0.20, color:'#c2410c', wide:false },
-  { frac:0.2, label:'20%',    ks:0.40, color:'#d97706', wide:false },
-  { frac:0.3, label:'30%',    ks:0.60, color:'#a16207', wide:false },
-  { frac:0.4, label:'40%',    ks:0.80, color:'#4d7c0f', wide:false },
-  { frac:1.0, label:'≥ 50%',  ks:1.00, color:'#15803d', wide:true  },
-];
-
 const WX = [0.90, 1.00, 1.10];
 
 // ═══════════════════════════════════════════════════════════
@@ -637,7 +566,6 @@ const S = {
   wxIdx:      1,
   crop:       'corn_full',
   plantDate:  null,
-  fPAWIdx:    5,     // default = Well Watered (index into FAW array)
   kcbDap:     null,
   kcbManual:  false,
   kcbOverride:null,
@@ -674,10 +602,10 @@ function currentKcb(){
   return kcbAtDap(S.crop, dap);
 }
 
-function currentKs(){ return FAW[S.fPAWIdx].ks; }
+// Ks = 1.0 always — tool assumes well-watered, ET-replacement scheduling
+function currentKs(){ return 1.0; }
 function currentKc(){
-  const kcb = currentKcb();
-  return kcb != null ? kcb * currentKs() : null;
+  return currentKcb();
 }
 
 function getETo(m,d){
@@ -994,67 +922,46 @@ function autoPositionKcb(){
 }
 
 // ═══════════════════════════════════════════════════════════
-//  FAW BUTTONS
-// ═══════════════════════════════════════════════════════════
-function buildFAWBtns(){
-  const track = document.getElementById('faw-track');
-  track.innerHTML = '';
-  FAW.forEach((f, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'faw-btn' + (f.wide ? ' wide' : '') + (i === S.fPAWIdx ? ' active' : '');
-    btn.style.backgroundColor = f.color;
-    btn.innerHTML = `${f.label}`;
-    btn.onclick = () => { S.fPAWIdx = i; buildFAWBtns(); renderCards(); saveState(); };
-    track.appendChild(btn);
-  });
-}
-
-// ═══════════════════════════════════════════════════════════
 //  INFO CARDS
 // ═══════════════════════════════════════════════════════════
 function renderCards(){
-  const eto=getETo(T_MON,T_DAY-1);
-  const kcb=currentKcb(), ks=currentKs(), kc=currentKc();
-  const etc=eto!=null&&kc!=null ? eto*kc : null;
-  const rain=parseFloat(document.getElementById('rain-in').value)||0;
-  const etcDisp=etc!=null ? parseFloat(fmt(etc)) : null;
-  const irr=etcDisp!=null ? Math.max(0,etcDisp-rain) : null;
+  const eto = getETo(T_MON, T_DAY-1);
+  const kcb = currentKcb();
+  const etc = (eto!=null && kcb!=null) ? eto*kcb : null;
+  const rain = parseFloat(document.getElementById('rain-in').value)||0;
+  const irr  = etc!=null ? Math.max(0, parseFloat(fmt(etc)) - rain) : null;
   const dp=S.unit==='mm'?1:2, u=S.unit==='mm'?'mm':'in';
 
   // Reference ET
   document.getElementById('c-eto').textContent = fmtU(eto);
 
-  // Kcb card — input is editable; update value only if not currently focused
+  // Kcb — update input only when not focused
   const kcbInput = document.getElementById('kcb-num');
   if(kcb!=null && document.activeElement !== kcbInput)
     kcbInput.value = kcb.toFixed(2);
 
-  // Ks card — read-only, derived from FAW selection
-  const ksEl = document.getElementById('c-ks');
-  const ksSub = document.getElementById('c-ks-sub');
-  ksEl.textContent = ks.toFixed(2);
-  ksEl.className = 'cval c-ks';
-  ksSub.textContent = FAW[S.fPAWIdx].label + (S.fPAWIdx===5 ? ' PAW · no stress' : ' PAW');
-
   // Crop ET
   document.getElementById('c-etc').textContent = fmtU(etc);
   document.getElementById('c-etc-sub').textContent = kcb!=null
-    ? `Kcb ${kcb.toFixed(2)} · Ks ${ks.toFixed(2)}`
-    : 'ET × Kcb × Ks';
+    ? `ET × Kcb ${kcb.toFixed(2)}`
+    : 'ET × Kcb';
 
-  // Rain unit label (inline)
+  // Rain unit
   document.getElementById('rain-unit-inline').textContent = S.unit==='mm' ? 'mm' : 'in';
 
   // Irrigation
-  const irrEl=document.getElementById('c-irr');
-  const irrSub=document.getElementById('c-irr-sub');
+  const irrEl  = document.getElementById('c-irr');
+  const irrSub = document.getElementById('c-irr-sub');
   if(irr!=null){
-    irrEl.className='cval '+(irr>0?'c-irr':'c-none');
-    irrEl.textContent=irr>0 ? irr.toFixed(dp)+' '+u : 'None needed';
-    irrSub.textContent=irr>0 ? `${fmtU(etc)} − ${rain.toFixed(dp)} ${u}` : 'Precip ≥ crop demand';
+    irrEl.className = 'cval '+(irr>0?'c-irr':'c-none');
+    irrEl.textContent = irr>0 ? irr.toFixed(dp)+' '+u : 'None needed';
+    irrSub.textContent = irr>0
+      ? `${fmtU(etc)} − ${rain.toFixed(dp)} ${u}`
+      : 'Precip ≥ crop ET';
   } else {
-    irrEl.className='cval c-none'; irrEl.textContent='—';
-    irrSub.textContent='crop ET − rain';
+    irrEl.className = 'cval c-none';
+    irrEl.textContent = '—';
+    irrSub.textContent = 'crop ET − rain';
   }
 }
 
@@ -1181,7 +1088,6 @@ function saveState(){
       kcbDap:     S.kcbDap,
       kcbManual:  S.kcbManual,
       wxIdx:      S.wxIdx,
-      fPAWIdx:    S.fPAWIdx,
       unit:       S.unit,
     }));
   } catch(e){}
@@ -1198,7 +1104,6 @@ function loadState(){
     if(sv.county)                            S.county = sv.county;
     if(sv.plantDate)                         S.plantDate = new Date(sv.plantDate+'T00:00:00');
     if(sv.wxIdx  != null)                    S.wxIdx  = sv.wxIdx;
-    if(sv.fPAWIdx!= null)                    S.fPAWIdx= sv.fPAWIdx;
     if(sv.kcbOverride != null)               S.kcbOverride = sv.kcbOverride;
     if(sv.kcbDap != null)                    S.kcbDap = sv.kcbDap;
     if(sv.kcbManual != null)                 S.kcbManual = sv.kcbManual;
@@ -1323,7 +1228,6 @@ async function init(){
   document.getElementById('state-sel').value = S.state;
 
   setupKcbDrag();
-  buildFAWBtns();
   window.addEventListener('resize', ()=>{ drawKcbCurve(); renderChart(); });
 
   // Show terms modal on first visit
