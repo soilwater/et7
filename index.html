@@ -846,6 +846,18 @@ function drawKcbCurve(){
   out+=`<circle cx="${hx.toFixed(1)}" cy="${hy.toFixed(1)}" r="6" fill="${handleFill}" stroke="${handleStroke}" stroke-width="2"/>`;
   out+=`<circle cx="${hx.toFixed(1)}" cy="${hy.toFixed(1)}" r="2.5" fill="${curveColor}"/>`;
 
+  // Current Kcb value displayed top-right of chart
+  const displayKcb = S.kcbOverride ?? (S.kcbDap != null ? kcbAtDap(S.crop, S.kcbDap) : null);
+  if(displayKcb != null){
+    const kcbColor = isDark ? '#fb8761' : '#d0501a';  // matches .cval.c-eto / your accent color
+    out += `<text
+      x="${(W - KP.r - 4).toFixed(1)}" y="${(KP.t - 80).toFixed(1)}"
+      text-anchor="end"
+      font-size="22" font-weight="700"
+      font-family="IBM Plex Mono,monospace"
+      fill="${kcbColor}">${displayKcb.toFixed(2)}</text>`;
+  }
+
   svg.innerHTML=out;
 }
 
