@@ -54,7 +54,7 @@ header{display:flex;align-items:center;justify-content:space-between;
 [data-theme="light"] .logo h1{
   background:linear-gradient(135deg,#d0501a,#8b1f65 55%,#3d0f70);
   -webkit-background-clip:text;background-clip:text}
-.logo p{color:var(--dim);font-size:.72rem;margin-top:2px}
+.logo p{color:var(--dim);font-size:.82rem;margin-top:3px;line-height:1.5}
 .hdr-r{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
 
 /* ═══ GENERIC CONTROLS ══════════════════════════════════════ */
@@ -154,7 +154,7 @@ input.kcb-num{background:transparent;border:none;border-bottom:2px solid var(--a
   width:70px;outline:none;padding:0;min-width:0;text-align:right}
 input.kcb-num:focus{border-bottom-color:var(--accent2)}
 [data-theme="light"] input.kcb-num{color:var(--accent2);border-bottom-color:var(--accent2)}
-.kcb-svg-wrap{position:relative;cursor:ew-resize;user-select:none;touch-action:none}
+.kcb-svg-wrap{position:relative;cursor:ew-resize;user-select:none;touch-action:pan-y}
 #kcb-svg{display:block;width:100%;overflow:visible}
 .kcb-hint{font-size:.7rem;color:var(--muted);margin-top:4px;text-align:center}
 
@@ -263,7 +263,8 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
 <header>
   <div class="logo">
     <h1>ET7</h1>
-    <p>7-day cumulative evapotranspiration · KSU Soil Water Processes Lab</p>
+    <p>Weekly irrigation estimation · Short-grass reference ET</p>
+    <p>Soil Water Processes Lab · Kansas State University</p>
   </div>
   <div class="hdr-r">
     <select class="ctrl" id="state-sel" onchange="onStateChange()" style="min-width:120px">
@@ -318,7 +319,7 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
       <div class="csub">drag curve or edit</div>
     </div>
     <input class="kcb-num" type="number" id="kcb-num" min="0" max="1.50" step="0.01"
-           oninput="onKcbNumInput();saveState()">
+           oninput="onKcbNumInput()">
   </div>
   <div class="card">
     <div class="card-left">
@@ -602,12 +603,6 @@ function currentKcb(){
   return kcbAtDap(S.crop, dap);
 }
 
-// Ks = 1.0 always — tool assumes well-watered, ET-replacement scheduling
-function currentKs(){ return 1.0; }
-function currentKc(){
-  return currentKcb();
-}
-
 function getETo(m,d){
   const rows = etStore[S.county];
   if(!rows) return null;
@@ -645,11 +640,12 @@ async function fetchCountyData(stateKey){
       etStore[name] = monthly;
     });
     const names = Object.keys(counties);
-    if(names.length) S.county = names[0];
+    // Only default to first county if no valid saved selection
+    if(names.length && (!S.county || !etStore[S.county])) S.county = names[0];
     buildCountyDropdown(names);
   } catch(err){
     showLoadError(err);
-    throw err; // halt init — nothing to render without data
+    // Don't throw — error banner is shown, let init continue gracefully
   }
 }
 
@@ -1255,8 +1251,6 @@ async function init(){
 
   // Weather buttons
   [0,1,2].forEach(j=>document.getElementById(`wx-${j}`).classList.toggle('active',j===S.wxIdx));
-  // Re-apply active classes for correct weather btn colors
-  const wxIds=['wx-c','','wx-w'];
   document.getElementById('wx-0').className='wx-btn wx-c'+(S.wxIdx===0?' active':'');
   document.getElementById('wx-1').className='wx-btn'+(S.wxIdx===1?' active':'');
   document.getElementById('wx-2').className='wx-btn wx-w'+(S.wxIdx===2?' active':'');
