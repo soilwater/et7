@@ -937,6 +937,9 @@ function onKcbNumInput(){
   }
   S.kcbDap=bestDap;
   drawKcbCurve(); renderCards(); saveState();
+}
+
+function autoPositionKcb(){
   const dap=currentDap();
   const crop=CROPS[S.crop];
   const total=cropTotalDays(crop);
