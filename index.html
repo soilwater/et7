@@ -865,12 +865,11 @@ function drawKcbCurve(){
 function setupKcbDrag(){
   const wrap=document.getElementById('kcb-svg-wrap');
   let dragging=false;
-  let startX=0;
+  let touchStartX=0, touchStartY=0, dragConfirmed=false;
 
   function dapFromX(clientX){
     const r=wrap.getBoundingClientRect();
-    const W=r.width;
-    const frac=Math.max(0,Math.min(1,(clientX-r.left-KP.l)/(W-KP.l-KP.r)));
+    const frac=Math.max(0,Math.min(1,(clientX-r.left-KP.l)/(r.width-KP.l-KP.r)));
     return Math.round(frac*cropTotalDays(CROPS[S.crop]));
   }
   function apply(dap){
@@ -879,34 +878,49 @@ function setupKcbDrag(){
     if(v!=null) document.getElementById('kcb-num').value=v.toFixed(2);
     drawKcbCurve(); renderCards(); saveState();
   }
-
-  // ── Mouse ──
-  wrap.addEventListener('mousedown',e=>{
-    dragging=true; apply(dapFromX(e.clientX)); e.preventDefault();
-  });
-  document.addEventListener('mousemove',e=>{if(dragging) apply(dapFromX(e.clientX));});
-  document.addEventListener('mouseup',()=>{ dragging=false; });
-
-  // ── Touch — attach document listeners only while dragging ──
-  function onTouchMove(e){
-    if(!dragging) return;
-    apply(dapFromX(e.touches[0].clientX));
-    e.preventDefault();
-  }
-  function onTouchEnd(){
-    dragging=false;
+  function cleanup(){
+    dragging=false; dragConfirmed=false;
     document.removeEventListener('touchmove', onTouchMove);
     document.removeEventListener('touchend',  onTouchEnd);
+    document.removeEventListener('touchcancel', onTouchEnd);
   }
-  wrap.addEventListener('touchstart', e=>{
-    startX = e.touches[0].clientX;
-    dragging=true;
-    apply(dapFromX(startX));
+
+  // ── Mouse (desktop) ──────────────────────────────────────
+  wrap.addEventListener('mousedown', e=>{
+    dragging=true; apply(dapFromX(e.clientX)); e.preventDefault();
+  });
+  document.addEventListener('mousemove', e=>{ if(dragging) apply(dapFromX(e.clientX)); });
+  document.addEventListener('mouseup', ()=>{ dragging=false; });
+
+  // ── Touch (mobile) ───────────────────────────────────────
+  // Strategy: don't apply on touchstart. Wait for movement.
+  // If movement is mostly horizontal → confirmed drag (prevent scroll + apply).
+  // If movement is mostly vertical → let scroll happen, abort drag.
+  function onTouchMove(e){
+    const dx = Math.abs(e.touches[0].clientX - touchStartX);
+    const dy = Math.abs(e.touches[0].clientY - touchStartY);
+
+    if(!dragConfirmed){
+      if(dx < 6 && dy < 6) return;       // not enough movement yet
+      if(dy > dx){ cleanup(); return; }   // vertical scroll — abort
+      dragConfirmed=true;
+    }
     e.preventDefault();
-    // Only listen on document for the duration of this drag
-    document.addEventListener('touchmove', onTouchMove, {passive:false});
-    document.addEventListener('touchend',  onTouchEnd);
-  },{passive:false});
+    apply(dapFromX(e.touches[0].clientX));
+  }
+  function onTouchEnd(){ cleanup(); }
+
+  wrap.addEventListener('touchstart', e=>{
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    dragging=true; dragConfirmed=false;
+    // Attach to document only for this drag — removed in cleanup()
+    document.addEventListener('touchmove',   onTouchMove, {passive:false});
+    document.addEventListener('touchend',    onTouchEnd);
+    document.addEventListener('touchcancel', onTouchEnd);
+    // Don't preventDefault here — let the browser decide scroll vs drag
+    // until we confirm the direction in onTouchMove
+  },{passive:true});
 }
 
 function onKcbNumInput(){
@@ -922,10 +936,7 @@ function onKcbNumInput(){
     if(diff<bestDiff){bestDiff=diff;bestDap=d;}
   }
   S.kcbDap=bestDap;
-  drawKcbCurve(); renderCards();
-}
-
-function autoPositionKcb(){
+  drawKcbCurve(); renderCards(); saveState();
   const dap=currentDap();
   const crop=CROPS[S.crop];
   const total=cropTotalDays(crop);
@@ -1253,11 +1264,11 @@ async function init(){
   setupKcbDrag();
   window.addEventListener('resize', ()=>{ drawKcbCurve(); renderChart(); });
 
-  // Show terms modal on first visit
-  if(!sessionStorage.getItem('tos-accepted')){
+  // Show terms modal once — localStorage persists when PWA is closed
+  if(!localStorage.getItem('et7_tos')){
     document.getElementById('tos-modal').style.display = 'flex';
     document.querySelector('.modal-close').addEventListener('click', ()=>{
-      sessionStorage.setItem('tos-accepted','1');
+      localStorage.setItem('et7_tos','1');
     });
   }
 
