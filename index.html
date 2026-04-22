@@ -432,9 +432,9 @@ const etStore = {};
 // ═══════════════════════════════════════════════════════════
 const CROPS = {
   corn_full: {
-    name:'Corn — Full season',
-    description:'~110–120 day relative maturity · typical Kansas',
-    dateLabel:'Planting Date', defaultDate:'04-01',
+    name:'Corn',
+    description:'Full season · typical Kansas',
+    dateLabel:'Planting Date', defaultDate:'04-15',
     stages:[
       {dap:0,   label:'VE',   kcb:0.15},
       {dap:12,  label:'V3',   kcb:0.15},
@@ -450,27 +450,10 @@ const CROPS = {
       {dap:165, label:'Mat.', kcb:0.15},
     ]
   },
-  corn_early: {
-    name:'Corn — Early season',
-    description:'~90–100 day relative maturity · short-season',
-    dateLabel:'Planting Date', defaultDate:'04-15',
-    stages:[
-      {dap:0,   label:'VE',  kcb:0.15},
-      {dap:10,  label:'V3',  kcb:0.15},
-      {dap:22,  label:'V6',  kcb:0.22},
-      {dap:34,  label:'V10', kcb:0.50},
-      {dap:46,  label:'VT',  kcb:1.10},
-      {dap:54,  label:'R1',  kcb:1.15},
-      {dap:84,  label:'R4',  kcb:1.15},
-      {dap:98,  label:'R5',  kcb:0.80},
-      {dap:110, label:'R6',  kcb:0.30},
-      {dap:125, label:'Mat.',kcb:0.15},
-    ]
-  },
   soybean: {
     name:'Soybean',
-    description:'Indeterminate varieties · Groups III–IV',
-    dateLabel:'Planting Date', defaultDate:'04-15',
+    description:'Indeterminate varieties · Groups III–V',
+    dateLabel:'Planting Date', defaultDate:'05-20',
     stages:[
       {dap:0,   label:'VE',  kcb:0.15},
       {dap:14,  label:'V2',  kcb:0.15},
@@ -488,12 +471,12 @@ const CROPS = {
   winterWheat: {
     name:'Winter Wheat',
     description:'Hard red winter · typical Great Plains',
-    dateLabel:'Seeding Date', defaultDate:'10-15',
+    dateLabel:'Seeding Date', defaultDate:'10-10',
     stages:[
       {dap:0,   label:'Emerg.', kcb:0.15},
       {dap:20,  label:'Seedlng',kcb:0.15},
       {dap:55,  label:'Tiller', kcb:0.40},
-      {dap:155, label:'GS30',   kcb:0.55},
+      {dap:155, label:'Elong.',   kcb:0.55},
       {dap:175, label:'Flag',   kcb:0.82},
       {dap:190, label:'Boot',   kcb:1.00},
       {dap:205, label:'Head',   kcb:1.10},
@@ -506,8 +489,8 @@ const CROPS = {
   },
   sorghum: {
     name:'Grain Sorghum',
-    description:'Full-season grain sorghum · dryland or irrigated',
-    dateLabel:'Planting Date', defaultDate:'05-01',
+    description:'Full-season grain sorghum',
+    dateLabel:'Planting Date', defaultDate:'06-01',
     stages:[
       {dap:0,   label:'VE',     kcb:0.15},
       {dap:12,  label:'V3',     kcb:0.15},
@@ -525,7 +508,7 @@ const CROPS = {
   sunflower: {
     name:'Sunflower',
     description:'Oilseed sunflower · standard season',
-    dateLabel:'Planting Date', defaultDate:'05-01',
+    dateLabel:'Planting Date', defaultDate:'06-01',
     stages:[
       {dap:0,   label:'VE',  kcb:0.15},
       {dap:14,  label:'V4',  kcb:0.15},
