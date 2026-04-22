@@ -54,7 +54,7 @@ header{display:flex;align-items:center;justify-content:space-between;
 [data-theme="light"] .logo h1{
   background:linear-gradient(135deg,#d0501a,#8b1f65 55%,#3d0f70);
   -webkit-background-clip:text;background-clip:text}
-.logo p{color:var(--dim);font-size:.82rem;margin-top:3px;line-height:1.45}
+.logo p{color:var(--dim);font-size:.72rem;margin-top:2px}
 .hdr-r{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
 
 /* ═══ GENERIC CONTROLS ══════════════════════════════════════ */
@@ -263,8 +263,7 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
 <header>
   <div class="logo">
     <h1>ET7</h1>
-    <p>Weekly irrigation estimation tool · Short-grass reference ET</p>
-    <p style="margin-top:3px">Soil Water Processes Lab · Kansas State University</p>
+    <p>7-day cumulative evapotranspiration · KSU Soil Water Processes Lab</p>
   </div>
   <div class="hdr-r">
     <select class="ctrl" id="state-sel" onchange="onStateChange()" style="min-width:120px">
@@ -646,8 +645,7 @@ async function fetchCountyData(stateKey){
       etStore[name] = monthly;
     });
     const names = Object.keys(counties);
-    // Only default to first county if we don't have a valid saved selection
-    if(names.length && (!S.county || !etStore[S.county])) S.county = names[0];
+    if(names.length) S.county = names[0];
     buildCountyDropdown(names);
   } catch(err){
     showLoadError(err);
@@ -867,6 +865,7 @@ function drawKcbCurve(){
 function setupKcbDrag(){
   const wrap=document.getElementById('kcb-svg-wrap');
   let dragging=false;
+  let startX=0;
 
   function dapFromX(clientX){
     const r=wrap.getBoundingClientRect();
@@ -880,12 +879,34 @@ function setupKcbDrag(){
     if(v!=null) document.getElementById('kcb-num').value=v.toFixed(2);
     drawKcbCurve(); renderCards(); saveState();
   }
-  wrap.addEventListener('mousedown',e=>{dragging=true;apply(dapFromX(e.clientX));e.preventDefault();});
-  document.addEventListener('mousemove',e=>{if(dragging)apply(dapFromX(e.clientX));});
-  document.addEventListener('mouseup',()=>{dragging=false;});
-  wrap.addEventListener('touchstart',e=>{dragging=true;apply(dapFromX(e.touches[0].clientX));e.preventDefault();},{passive:false});
-  document.addEventListener('touchmove',e=>{if(dragging){apply(dapFromX(e.touches[0].clientX));e.preventDefault();}},{passive:false});
-  document.addEventListener('touchend',()=>{dragging=false;});
+
+  // ── Mouse ──
+  wrap.addEventListener('mousedown',e=>{
+    dragging=true; apply(dapFromX(e.clientX)); e.preventDefault();
+  });
+  document.addEventListener('mousemove',e=>{if(dragging) apply(dapFromX(e.clientX));});
+  document.addEventListener('mouseup',()=>{ dragging=false; });
+
+  // ── Touch — attach document listeners only while dragging ──
+  function onTouchMove(e){
+    if(!dragging) return;
+    apply(dapFromX(e.touches[0].clientX));
+    e.preventDefault();
+  }
+  function onTouchEnd(){
+    dragging=false;
+    document.removeEventListener('touchmove', onTouchMove);
+    document.removeEventListener('touchend',  onTouchEnd);
+  }
+  wrap.addEventListener('touchstart', e=>{
+    startX = e.touches[0].clientX;
+    dragging=true;
+    apply(dapFromX(startX));
+    e.preventDefault();
+    // Only listen on document for the duration of this drag
+    document.addEventListener('touchmove', onTouchMove, {passive:false});
+    document.addEventListener('touchend',  onTouchEnd);
+  },{passive:false});
 }
 
 function onKcbNumInput(){
@@ -1232,11 +1253,11 @@ async function init(){
   setupKcbDrag();
   window.addEventListener('resize', ()=>{ drawKcbCurve(); renderChart(); });
 
-  // Show terms modal only once — use localStorage so PWA remembers across sessions
-  if(!localStorage.getItem('et7_tos')){
+  // Show terms modal on first visit
+  if(!sessionStorage.getItem('tos-accepted')){
     document.getElementById('tos-modal').style.display = 'flex';
     document.querySelector('.modal-close').addEventListener('click', ()=>{
-      localStorage.setItem('et7_tos','1');
+      sessionStorage.setItem('tos-accepted','1');
     });
   }
 
@@ -1256,10 +1277,16 @@ async function init(){
     ri.value = saved.unit==='mm' ? (saved.rain).toFixed(1) : (saved.rain).toFixed(2);
   }
 
-  // Kcb: only auto-position from planting date if the user hadn't manually set it
-  if(S.kcbManual && S.kcbOverride != null){
-    // Restore the saved manual value directly into the input
-    document.getElementById('kcb-num').value = S.kcbOverride.toFixed(2);
+  // Kcb restore — if user had manually set it, honour the saved position;
+  // otherwise auto-position from planting date as usual.
+  if(S.kcbManual){
+    // Restore from saved override value (typed) or saved dap position (dragged)
+    if(S.kcbOverride != null){
+      document.getElementById('kcb-num').value = S.kcbOverride.toFixed(2);
+    } else if(S.kcbDap != null){
+      const v = kcbAtDap(S.crop, S.kcbDap);
+      if(v != null) document.getElementById('kcb-num').value = v.toFixed(2);
+    }
     drawKcbCurve();
   } else {
     autoPositionKcb();
