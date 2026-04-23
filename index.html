@@ -100,8 +100,8 @@ select.ctrl:focus{border-color:var(--accent2)}
 .card:last-child{border-bottom:none}
 .card-left{display:flex;flex-direction:column;gap:2px;min-width:0}
 .clbl{font-size:1.25rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
-  color:var(--dim);line-height:1.2}
-.csub{font-size:1.0rem;color:var(--muted);margin-top:2px;
+  color:var(--text);line-height:1.2}
+.csub{font-size:1.0rem;color:var(--dim);margin-top:2px;
   font-family:'IBM Plex Mono',monospace;font-weight:500}
 .cval{font-family:'IBM Plex Mono',monospace;font-size:1.7rem;font-weight:700;
   color:var(--text);line-height:1;white-space:nowrap}
@@ -133,10 +133,12 @@ input[type=number] { -moz-appearance: textfield; }
 /* ═══ CROP PANEL ════════════════════════════════════════════ */
 .crop-panel{background:var(--panel);border:1px solid var(--border);border-radius:10px;
   padding:13px 15px;margin-bottom:14px}
-.cp-top{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-bottom:12px}
+.cp-top{display:flex;flex-wrap:nowrap;gap:12px;align-items:flex-end;margin-bottom:12px}
+.crop-field{flex:0 0 200px;}
+.crop-field select{width:100%;}
 .fld{display:flex;flex-direction:column;gap:4px;min-width:0}
 .fld-lbl{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:var(--dim);font-weight:700}
-.crop-desc{font-size:1.0rem;color:var(--dim);font-style:italic;margin-top:2px;display:block;opacity:.8}
+.crop-desc{font-size:1.0rem;color:var(--dim);font-style:italic;margin-top:0;display:block;opacity:.8;white-space:nowrap;align-self:flex-end}
 .cp-desc-row{margin-bottom:10px;padding:0 2px}
 .fld select,.fld input[type=date]{background:var(--bg);border:1px solid var(--border-hi);
   color:var(--text);padding:6px 9px;border-radius:6px;
@@ -147,7 +149,7 @@ hr.div{border:none;border-top:1px solid var(--border);margin:10px 0}
 /* ── Kcb Slider ── */
 .kcb-wrap{margin-bottom:0}
 .kcb-header{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}
-.kcb-title{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;
+.kcb-title{font-size:.92rem;letter-spacing:.05em;text-transform:uppercase;
   color:var(--dim);font-weight:700}
 input.kcb-num{background:transparent;border:none;border-bottom:2px solid var(--accent);
   color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:1.7rem;font-weight:700;
@@ -157,6 +159,26 @@ input.kcb-num:focus{border-bottom-color:var(--accent2)}
 .kcb-svg-wrap{position:relative;cursor:ew-resize;user-select:none;touch-action:pan-y}
 #kcb-svg{display:block;width:100%;overflow:visible}
 .kcb-hint{font-size:.7rem;color:var(--muted);margin-top:4px;text-align:center}
+
+/* ═══ COLLAPSIBLE TABLE ══════════════════════════════════════ */
+details.tbl-details{margin-bottom:20px}
+details.tbl-details summary{
+  list-style:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 14px;background:var(--panel);border:1px solid var(--border);
+  border-radius:10px;font-size:.82rem;font-weight:600;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--dim);user-select:none;
+  transition:color .14s,border-color .14s}
+details.tbl-details summary::-webkit-details-marker{display:none}
+details.tbl-details summary::after{
+  content:'▾';font-size:1rem;color:var(--muted);transition:transform .2s}
+details.tbl-details[open] summary::after{transform:rotate(180deg)}
+details.tbl-details summary:hover{color:var(--text);border-color:var(--border-hi)}
+details.tbl-details[open] summary{border-radius:10px 10px 0 0;border-bottom-color:var(--border)}
+.tbl-details-inner{border:1px solid var(--border);border-top:none;
+  border-radius:0 0 10px 10px;padding:12px 12px 4px;background:var(--panel)}
+.tbl-today-val{font-family:'IBM Plex Mono',monospace;color:var(--accent);
+  font-weight:700;margin-left:8px;font-size:.9rem;text-transform:none;letter-spacing:0}
 
 /* ═══ TABLE ════════════════════════════════════════════════ */
 .tbl-outer{overflow-x:auto;margin-bottom:18px;border-radius:9px;
@@ -263,7 +285,7 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
 <header>
   <div class="logo">
     <h1>ET7</h1>
-    <p>Weekly irrigation estimation · Short-grass reference ET</p>
+    <p>Weekly irrigation estimation</p>
     <p>Soil Water Processes Lab · Kansas State University</p>
   </div>
   <div class="hdr-r">
@@ -309,14 +331,14 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
   <div class="card">
     <div class="card-left">
       <div class="clbl">Reference ET</div>
-      <div class="csub">past 7 days</div>
+      <div class="csub" id="c-eto-sub">Past 7 days</div>
     </div>
     <div class="cval c-eto" id="c-eto">—</div>
   </div>
   <div class="card">
     <div class="card-left">
-      <div class="clbl">Crop coefficient K<sub>cb</sub></div>
-      <div class="csub">drag curve or edit</div>
+      <div class="clbl">Crop coefficient K<sub>c</sub></div>
+      <div class="csub">Drag curve or edit by hand</div>
     </div>
     <input class="kcb-num" type="number" id="kcb-num" min="0" max="1.50" step="0.01"
            oninput="onKcbNumInput()">
@@ -331,7 +353,7 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
   <div class="card">
     <div class="card-left">
       <div class="clbl">Rainfall</div>
-      <div class="csub">past 7 days · enter total</div>
+      <div class="csub">Past 7 days. Edit by hand</div>
     </div>
     <div class="rain-row">
       <input class="rain-in" type="number" id="rain-in" min="0.0" step="0.01" value="0.0"
@@ -341,7 +363,7 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
   </div>
   <div class="card">
     <div class="card-left">
-      <div class="clbl">Est. Irrigation</div>
+      <div class="clbl">Estimated Irrigation</div>
       <div class="csub" id="c-irr-sub">crop ET − rain</div>
     </div>
     <div class="cval" id="c-irr">—</div>
@@ -351,17 +373,10 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
 <!-- CROP PANEL -->
 <div class="crop-panel">
   <div class="cp-top">
-    <div class="fld">
+    <div class="fld crop-field">
       <span class="fld-lbl">Crop</span>
       <select id="crop-sel" onchange="onCropChange()"></select>
     </div>
-    <div class="fld">
-      <span class="fld-lbl" id="date-lbl">Planting Date</span>
-      <input type="date" id="plant-date" onchange="onDateChange()">
-    </div>
-  </div>
-  <div class="cp-desc-row">
-    <span class="crop-desc" id="crop-desc"></span>
   </div>
 
   <hr class="div">
@@ -369,39 +384,43 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
   <!-- Kcb Curve Slider -->
   <div class="kcb-wrap">
     <div class="kcb-header">
-      <span class="kcb-title">Crop coefficient K<sub>cb</sub> <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.72rem;opacity:.75">— drag to adjust</span></span>
+      <span class="kcb-title">Crop coefficient K<sub>c</sub></span>=
+      <span id="kcb-header-val" style="font-weight:700">—</span>
     </div>
     <div class="kcb-svg-wrap" id="kcb-svg-wrap">
       <svg id="kcb-svg" height="168"></svg>
     </div>
-    <div class="kcb-hint" id="kcb-hint">Set a planting date for automatic positioning</div>
+    <div class="kcb-hint" id="kcb-hint">Estimated from typical planting date · drag to adjust</div>
   </div>
 
 </div>
 
-<!-- TABLE -->
-<div class="tbl-caption">Typical weekly ET₀ (short-grass reference) &mdash; past 7 days<span class="caption-county" id="caption-county"></span></div>
-<div class="tbl-outer">
-  <table id="et-table">
-    <thead><tr id="thead-r"></tr></thead>
-    <tbody id="tbody"></tbody>
-  </table>
-</div>
-
-<!-- LEGEND -->
-<div class="leg-wrap">
-  <span class="leg-lbl" id="l-min"></span>
-  <div class="leg-bar-box">
-    <canvas id="leg-canvas" width="320" height="11"></canvas>
-    <div class="leg-ticks">
-      <span class="leg-tick" id="lt0"></span><span class="leg-tick" id="lt1"></span>
-      <span class="leg-tick" id="lt2"></span><span class="leg-tick" id="lt3"></span>
-      <span class="leg-tick" id="lt4"></span>
+<!-- COLLAPSIBLE TABLE + LEGEND -->
+<details class="tbl-details">
+  <summary>Reference ET table</summary>
+  <div class="tbl-details-inner">
+    <div class="tbl-caption">Typical weekly ET₀ (short-grass) — <span id="caption-county"></span></div>
+    <div class="tbl-outer">
+      <table id="et-table">
+        <thead><tr id="thead-r"></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div class="leg-wrap">
+      <span class="leg-lbl" id="l-min"></span>
+      <div class="leg-bar-box">
+        <canvas id="leg-canvas" width="320" height="11"></canvas>
+        <div class="leg-ticks">
+          <span class="leg-tick" id="lt0"></span><span class="leg-tick" id="lt1"></span>
+          <span class="leg-tick" id="lt2"></span><span class="leg-tick" id="lt3"></span>
+          <span class="leg-tick" id="lt4"></span>
+        </div>
+      </div>
+      <span class="leg-lbl" id="l-max"></span>
+      <span class="leg-lbl" id="l-unit" style="color:var(--muted)"></span>
     </div>
   </div>
-  <span class="leg-lbl" id="l-max"></span>
-  <span class="leg-lbl" id="l-unit" style="color:var(--muted)"></span>
-</div>
+</details>
 
 <!-- CHART -->
 <div id="chart-wrap">
@@ -475,7 +494,7 @@ const CROPS = {
 winterWheat: {
   name:'Winter Wheat',
   winterCrop: true,
-  description:'Hard red winter · typical Great Plains',
+  description:'Hard red winter wheat, typical of the southern Great Plains',
   dateLabel:'Seeding Date', defaultDate:'10-10',
   stages:[
     {dap:0,   label:'Plant.',  kcb:0.15},
@@ -558,7 +577,6 @@ const S = {
   unit:       'in',
   wxIdx:      1,
   crop:       'corn_full',
-  plantDate:  null,
   kcbDap:     null,
   kcbManual:  false,
   kcbOverride:null,
@@ -569,9 +587,30 @@ const S = {
 // ═══════════════════════════════════════════════════════════
 function getDOY(m,d){ let n=d; for(let i=0;i<m;i++) n+=MDAYS[i]; return n; }
 
-function currentDap(){
-  if(!S.plantDate) return null;
-  return Math.floor((today - S.plantDate) / 86400000);
+// ═══════════════════════════════════════════════════════════
+//  DAP APPROXIMATION — from typical planting date in CROPS
+// ═══════════════════════════════════════════════════════════
+function typicalDapToday(cropKey){
+  const crop = CROPS[cropKey];
+  const [mo, dy] = crop.defaultDate.split('-').map(Number);
+  const total = cropTotalDays(crop);
+  const todayDOY = getDOY(T_MON, T_DAY);
+  const plantDOY = getDOY(mo - 1, dy);
+  let dap = crop.winterCrop
+    ? (() => { let d = todayDOY - plantDOY; return d < 0 ? d + 365 : d; })()
+    : todayDOY - plantDOY;
+  return Math.max(0, Math.min(total, dap));
+}
+
+function autoPositionKcb(){
+  const total = cropTotalDays(CROPS[S.crop]);
+  const dap = typicalDapToday(S.crop);
+  S.kcbDap = dap; S.kcbOverride = null; S.kcbManual = false;
+  const v = kcbAtDap(S.crop, dap);
+  if(v != null) document.getElementById('kcb-num').value = v.toFixed(2);
+  const pct = Math.round(dap / total * 100);
+  document.getElementById('kcb-hint').textContent =
+    `~${pct}% through typical season · drag to adjust`;
 }
 
 function kcbAtDap(cropKey, dap){
@@ -831,32 +870,18 @@ function drawKcbCurve(){
     out+=`<text x="${x.toFixed(1)}" y="${(H-3).toFixed(1)}" text-anchor="${anchor}" font-size="12.0" fill="${textColor}" font-family="IBM Plex Sans,sans-serif">${lbl}</text>`;
   });
 
-  // Today vertical
-  if(S.plantDate && S.kcbDap!=null && !S.kcbManual){
-    const doy_dap=currentDap();
-    if(doy_dap!=null && doy_dap>=0 && doy_dap<=total){
-      const tx=xS(doy_dap);
-      out+=`<line x1="${tx.toFixed(1)}" y1="${KP.t}" x2="${tx.toFixed(1)}" y2="${H-KP.b}" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" stroke-dasharray="3,2"/>`;
-    }
+  // Today vertical — show when not manually overridden
+  if(!S.kcbManual){
+    const todayDap = typicalDapToday(S.crop);
+    const tx = xS(todayDap);
+    out+=`<line x1="${tx.toFixed(1)}" y1="${KP.t}" x2="${tx.toFixed(1)}" y2="${H-KP.b}" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" stroke-dasharray="3,2"/>`;
   }
 
   // Handle vertical line + circle
   out+=`<line x1="${hx.toFixed(1)}" y1="${KP.t}" x2="${hx.toFixed(1)}" y2="${(H-KP.b).toFixed(1)}" stroke="${curveColor}" stroke-width="1.5" stroke-dasharray="4,2" opacity="0.7"/>`;
-  out+=`<circle cx="${hx.toFixed(1)}" cy="${hy.toFixed(1)}" r="10" fill="transparent"/>`;
-  out+=`<circle cx="${hx.toFixed(1)}" cy="${hy.toFixed(1)}" r="6" fill="${handleFill}" stroke="${handleStroke}" stroke-width="2"/>`;
-  out+=`<circle cx="${hx.toFixed(1)}" cy="${hy.toFixed(1)}" r="2.5" fill="${curveColor}"/>`;
-
-  // Current Kcb value displayed top-right of chart
-  const displayKcb = S.kcbOverride ?? (S.kcbDap != null ? kcbAtDap(S.crop, S.kcbDap) : null);
-  if(displayKcb != null){
-    const kcbColor = isDark ? '#fb8761' : '#d0501a';  // matches .cval.c-eto / your accent color
-    out += `<text
-      x="${(W - KP.r - 4).toFixed(1)}" y="${(KP.t - 80).toFixed(1)}"
-      text-anchor="end"
-      font-size="22" font-weight="700"
-      font-family="IBM Plex Mono,monospace"
-      fill="${kcbColor}">${displayKcb.toFixed(2)}</text>`;
-  }
+  out+=`<circle cx="${hx.toFixed(1)}" cy="${hy.toFixed(1)}" r="15" fill="transparent"/>`;
+  out+=`<circle cx="${hx.toFixed(1)}" cy="${hy.toFixed(1)}" r="9" fill="${handleFill}" stroke="${handleStroke}" stroke-width="2.5"/>`;
+  out+=`<circle cx="${hx.toFixed(1)}" cy="${hy.toFixed(1)}" r="3.5" fill="${curveColor}"/>`;
 
   svg.innerHTML=out;
 }
@@ -938,25 +963,6 @@ function onKcbNumInput(){
   drawKcbCurve(); renderCards(); saveState();
 }
 
-function autoPositionKcb(){
-  const dap=currentDap();
-  const crop=CROPS[S.crop];
-  const total=cropTotalDays(crop);
-  if(dap!=null && dap>=0 && dap<=total){
-    S.kcbDap=dap; S.kcbOverride=null; S.kcbManual=false;
-    const v=kcbAtDap(S.crop,dap);
-    if(v!=null) document.getElementById('kcb-num').value=v.toFixed(2);
-    document.getElementById('kcb-hint').textContent=
-      `Day ${dap} after ${crop.dateLabel.toLowerCase()} · drag to adjust`;
-  } else {
-    const midDap=Math.round(total*0.45);
-    S.kcbDap=midDap; S.kcbOverride=null;
-    const v=kcbAtDap(S.crop,midDap);
-    if(v!=null) document.getElementById('kcb-num').value=v.toFixed(2);
-    document.getElementById('kcb-hint').textContent='Set a planting date for automatic positioning · drag to adjust';
-  }
-}
-
 // ═══════════════════════════════════════════════════════════
 //  INFO CARDS
 // ═══════════════════════════════════════════════════════════
@@ -970,11 +976,14 @@ function renderCards(){
 
   // Reference ET
   document.getElementById('c-eto').textContent = fmtU(eto);
+  document.getElementById('c-eto-sub').textContent = 'Past 7 days';
 
-  // Kcb — update input only when not focused
+  // Kcb — update input and header value only when not focused
   const kcbInput = document.getElementById('kcb-num');
   if(kcb!=null && document.activeElement !== kcbInput)
     kcbInput.value = kcb.toFixed(2);
+  const hdrVal = document.getElementById('kcb-header-val');
+  if(hdrVal) hdrVal.textContent = kcb != null ? kcb.toFixed(2) : '—';
 
   // Crop ET
   document.getElementById('c-etc').textContent = fmtU(etc);
@@ -1063,7 +1072,7 @@ function renderChart(){
   const tickColor=isDark?'#a0a0d8':'#5050a0';       // bright enough to read
   const axisTitle=isDark?'#c0c0e8':'#3030a0';        // slightly brighter than ticks
   const lc=isDark?'#d8d8f8':'#2020c0';               // median line
-  const maxY=S.unit==='mm'?50:2.0;
+  const maxY=S.unit==='mm'?55:2.5;
 
   const chartFontSz = window.innerWidth < 500 ? 10 : 12;
   const axisTitleSz = window.innerWidth < 500 ? 11 : 13;
@@ -1088,7 +1097,7 @@ function renderChart(){
     paper_bgcolor:bg, plot_bgcolor:bg,
     font:{color:tickColor, family:"'IBM Plex Sans',sans-serif", size:chartFontSz},
     xaxis:{
-      title:{text:'Week', font:{size:axisTitleSz, color:axisTitle}, standoff:6},
+      title:{text:'Week of the Year', font:{size:axisTitleSz, color:axisTitle}, standoff:6},
       gridcolor:grid, gridwidth:1, zeroline:false,
       tickmode:'array', tickvals:[1,9,17,25,33,41,49],
       range:[.5,52.5], tickfont:{size:chartFontSz,color:tickColor},
@@ -1118,7 +1127,6 @@ function saveState(){
       state:      S.state,
       county:     S.county,
       crop:       S.crop,
-      plantDate:  S.plantDate ? S.plantDate.toISOString().slice(0,10) : null,
       rain:       parseFloat(document.getElementById('rain-in').value)||0,
       kcbOverride:S.kcbOverride,
       kcbDap:     S.kcbDap,
@@ -1138,7 +1146,6 @@ function loadState(){
     if(sv.state  && STATES[sv.state])        S.state  = sv.state;
     if(sv.crop   && CROPS[sv.crop])          S.crop   = sv.crop;
     if(sv.county)                            S.county = sv.county;
-    if(sv.plantDate)                         S.plantDate = new Date(sv.plantDate+'T00:00:00');
     if(sv.wxIdx  != null)                    S.wxIdx  = sv.wxIdx;
     if(sv.kcbOverride != null)               S.kcbOverride = sv.kcbOverride;
     if(sv.kcbDap != null)                    S.kcbDap = sv.kcbDap;
@@ -1172,31 +1179,7 @@ function setWeather(i){
 
 function onCropChange(){
   S.crop = document.getElementById('crop-sel').value;
-  const crop = CROPS[S.crop];
-  document.getElementById('date-lbl').textContent = crop.dateLabel;
-  document.getElementById('crop-desc').textContent = crop.description;
-  const yr = today.getFullYear();
-  const isWinter = !!CROPS[S.crop].winterCrop;
-  let plantYr;
-  if(isWinter){
-    // Jan–Jul → planted previous fall; Aug–Dec → planted this fall
-    plantYr = today.getMonth() < 7 ? yr - 1 : yr;
-  } else {
-    plantYr = yr;
-  }
-  const dateStr = `${plantYr}-${crop.defaultDate}`;
-  
-  document.getElementById('plant-date').value = dateStr;
-  S.plantDate = new Date(dateStr + 'T00:00:00');
   S.kcbManual = false; S.kcbOverride = null;
-  autoPositionKcb(); drawKcbCurve(); renderCards();
-  saveState();
-}
-
-function onDateChange(){
-  const v=document.getElementById('plant-date').value;
-  S.plantDate=v?new Date(v+'T00:00:00'):null;
-  S.kcbManual=false; S.kcbOverride=null;
   autoPositionKcb(); drawKcbCurve(); renderCards();
   saveState();
 }
@@ -1217,6 +1200,7 @@ function onCountyChange(){
   document.getElementById('footer').textContent =
     `ET7 · ${S.county} County, ${stLabel} · KSU Soil Water Processes Lab · Climate data: GRIDMET`;
   document.getElementById('caption-county').textContent = `${S.county} County, ${stLabel}`;
+  document.getElementById('c-eto-sub').textContent = 'Past 7 days';
   saveState();
   render();
 }
@@ -1242,20 +1226,8 @@ async function init(){
     cropSel.appendChild(o);
   });
 
-  // Apply restored / default crop settings to UI
+  // Apply restored crop to UI
   const initialCrop = CROPS[S.crop];
-  document.getElementById('crop-desc').textContent = initialCrop.description;
-  document.getElementById('date-lbl').textContent  = initialCrop.dateLabel;
-
-  // Planting date: use restored value, otherwise default for this crop
-  if(S.plantDate){
-    document.getElementById('plant-date').value = S.plantDate.toISOString().slice(0,10);
-  } else {
-    const yr = today.getFullYear();
-    const defDate = `${yr}-${initialCrop.defaultDate}`;
-    document.getElementById('plant-date').value = defDate;
-    S.plantDate = new Date(defDate+'T00:00:00');
-  }
 
   // Unit toggle
   document.getElementById('btn-in').classList.toggle('active', S.unit==='in');
@@ -1289,6 +1261,7 @@ async function init(){
     document.getElementById('footer').textContent =
       `ET7 · ${S.county} County, ${stLabel} · KSU Soil Water Processes Lab · Climate data: GRIDMET`;
     document.getElementById('caption-county').textContent = `${S.county} County, ${stLabel}`;
+    document.getElementById('c-eto-sub').textContent = 'Past 7 days';
   }
 
   // Restore rain input
