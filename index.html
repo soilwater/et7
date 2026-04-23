@@ -137,12 +137,10 @@ input[type=number] { -moz-appearance: textfield; }
 .crop-field{flex:0 0 200px;}
 .crop-field select{width:100%;}
 .fld{display:flex;flex-direction:column;gap:4px;min-width:0}
-.fld-lbl{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;color:var(--dim);font-weight:700}
-.crop-desc{font-size:1.0rem;color:var(--dim);font-style:italic;margin-top:0;display:block;opacity:.8;white-space:nowrap;align-self:flex-end}
-.cp-desc-row{margin-bottom:10px;padding:0 2px}
+.fld-lbl{font-size:1.0rem;letter-spacing:.07em;text-transform:uppercase;color:var(--dim);font-weight:700}
 .fld select,.fld input[type=date]{background:var(--bg);border:1px solid var(--border-hi);
   color:var(--text);padding:6px 9px;border-radius:6px;
-  font-family:'IBM Plex Sans',sans-serif;font-size:.92rem;font-weight:500;outline:none}
+  font-family:'IBM Plex Sans',sans-serif;font-size:1.25rem;font-weight:500;outline:none}
 .fld select:focus,.fld input:focus{border-color:var(--accent2)}
 hr.div{border:none;border-top:1px solid var(--border);margin:10px 0}
 
@@ -326,6 +324,12 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
   <button class="wx-btn wx-w" id="wx-2" onclick="setWeather(2)">☀ Warmer<span class="wx-sub">+10% ET</span></button>
 </div>
 
+<!-- CHART -->
+<div id="chart-wrap">
+  <div class="chart-hdr">Typical Weekly ET<sub>o</sub> — Reference Grass</div>
+  <div id="chart"></div>
+</div>
+<br>
 <!-- INFO CARDS — stacked, label left / value right -->
 <div class="cards">
   <div class="card">
@@ -375,7 +379,7 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
   <div class="cp-top">
     <div class="fld crop-field">
       <span class="fld-lbl">Crop</span>
-      <select id="crop-sel" onchange="onCropChange()"></select>
+      <select class="csel" id="crop-sel" onchange="onCropChange()"></select>
     </div>
   </div>
 
@@ -397,7 +401,7 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
 
 <!-- COLLAPSIBLE TABLE + LEGEND -->
 <details class="tbl-details">
-  <summary>Reference ET table for each day of the year</summary>
+  <summary>Details: Reference ET for each day of the year</summary>
   <div class="tbl-details-inner">
     <div class="tbl-caption">Typical weekly ET₀ (short-grass) — <span id="caption-county"></span></div>
     <div class="tbl-outer">
@@ -422,11 +426,7 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
   </div>
 </details>
 
-<!-- CHART -->
-<div id="chart-wrap">
-  <div class="chart-hdr">Typical Weekly ET<sub>o</sub> — Reference Grass</div>
-  <div id="chart"></div>
-</div>
+
 
 <footer id="footer">ET7 · KSU Soil Water Processes Lab · Climate data: GRIDMET</footer>
 </div><!-- .app -->
