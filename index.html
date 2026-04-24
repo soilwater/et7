@@ -295,7 +295,7 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
   <div class="hdr-top">
     <div class="logo">
       <h1>ET7</h1>
-      <p>Weekly irrigation estimation</p>
+      <p>Weekly crop ET and irrigation estimates. v1.0</p>
       <p>Soil Water Processes Lab · Agronomy · Kansas State University</p>
     </div>
     <div class="hdr-icons">
@@ -1109,7 +1109,7 @@ function renderChart(){
   const wxLabel = S.wxIdx===0?'Cooler (p25)':S.wxIdx===2?'Warmer (p75)':'Typical (median)';
   const todayMark={
     x:[labels[todayDOY-1]], y:[markerY], mode:'markers',
-    marker:{color:'#fff',size:11,symbol:'circle',line:{color:bg,width:2.5}},
+    marker:{color:isDark ? '#ffffff' : '#1a1a3a',size:11,symbol:'circle',line:{color:bg,width:2.5}},
     name:`Today · ${wxLabel}`,
     hovertemplate:`Today (DOY ${todayDOY})<br>ET₀: %{y:.${dp}f} ${ul}<extra></extra>`};
 
