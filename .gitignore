@@ -1,2 +1,12 @@
-*.geojson
+# Data and notebooks — kept local only
+climate/
 *.ipynb
+*.ipynb_checkpoints/
+.ipynb_checkpoints/
+*.geojson
+
+
+# Common clutter
+.DS_Store
+__pycache__/
+*.pyc
