@@ -1099,6 +1099,7 @@ function renderChart(){
     ? Math.round(window.innerWidth * 0.55) : 340;
 
   const layout={
+    dragmode: false,
     height:chartH, paper_bgcolor:bg, plot_bgcolor:bg,
     font:{color:tickColor, family:"'IBM Plex Sans',sans-serif", size:chartFontSz},
     xaxis:{
@@ -1121,7 +1122,7 @@ function renderChart(){
     shapes:[{type:'line',x0:labels[todayDOY-1],x1:labels[todayDOY-1],y0:0,y1:maxY,
       line:{color:isDark?'rgba(255,255,255,.22)':'rgba(0,0,80,.18)',width:1.5,dash:'dot'}}]
   };
-  Plotly.newPlot('chart',[band,medLine,todayMark],layout,{displayModeBar:false,responsive:true, scrollZoom: false,dragmode: false});
+  Plotly.newPlot('chart',[band,medLine,todayMark],layout,{displayModeBar:false,responsive:true, scrollZoom: false});
 }
 
 // ═══════════════════════════════════════════════════════════
