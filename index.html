@@ -44,9 +44,9 @@ body{min-height:100vh}
 .app{max-width:560px;margin:0 auto;padding:16px 13px 40px}
 
 /* ═══ HEADER ═══════════════════════════════════════════════ */
-header{display:flex;align-items:center;justify-content:space-between;
-  border-bottom:1px solid var(--border);padding-bottom:11px;margin-bottom:16px;
-  gap:10px;flex-wrap:wrap}
+header{position:relative;border-bottom:1px solid var(--border);
+  padding-bottom:11px;margin-bottom:16px}
+.hdr-top{display:flex;align-items:flex-start;justify-content:space-between}
 .logo h1{font-family:'Rajdhani',sans-serif;font-size:1.9rem;font-weight:700;
   letter-spacing:.06em;line-height:1;
   background:linear-gradient(135deg,#fb8761,#b5367a 55%,#4f127b);
@@ -55,7 +55,8 @@ header{display:flex;align-items:center;justify-content:space-between;
   background:linear-gradient(135deg,#d0501a,#8b1f65 55%,#3d0f70);
   -webkit-background-clip:text;background-clip:text}
 .logo p{color:var(--dim);font-size:.82rem;margin-top:3px;line-height:1.5}
-.hdr-r{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.hdr-icons{display:flex;gap:6px;align-items:center;flex-shrink:0;margin-left:8px}
+.hdr-controls{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:10px}
 
 /* ═══ GENERIC CONTROLS ══════════════════════════════════════ */
 .seg{display:inline-flex;background:var(--panel);border:1px solid var(--border);
@@ -278,12 +279,18 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
 
 <!-- HEADER -->
 <header>
-  <div class="logo">
-    <h1>ET7</h1>
-    <p>Weekly irrigation estimation</p>
-    <p>Soil Water Processes Lab · Agronomy · Kansas State University</p>
+  <div class="hdr-top">
+    <div class="logo">
+      <h1>ET7</h1>
+      <p>Weekly irrigation estimation</p>
+      <p>Soil Water Processes Lab · Agronomy · Kansas State University</p>
+    </div>
+    <div class="hdr-icons">
+      <button class="icon-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle light/dark">🌙</button>
+      <button class="info-btn" onclick="document.getElementById('tos-modal').style.display='flex'">ℹ</button>
+    </div>
   </div>
-  <div class="hdr-r">
+  <div class="hdr-controls">
     <select class="ctrl" id="state-sel" onchange="onStateChange()" style="min-width:120px">
       <option value="KS" selected>Kansas</option>
     </select>
@@ -294,8 +301,6 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
       <button class="seg-btn active" id="btn-in" onclick="setUnit('in')">in</button>
       <button class="seg-btn" id="btn-mm" onclick="setUnit('mm')">mm</button>
     </div>
-    <button class="icon-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle light/dark">🌙</button>
-    <button class="info-btn" onclick="document.getElementById('tos-modal').style.display='flex'">ℹ</button>
   </div>
 </header>
 
