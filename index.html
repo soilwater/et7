@@ -26,7 +26,7 @@
   --tbl-gap:rgba(255,255,255,0.22);
   --tbl-bg:var(--panel);
   --today-ring:#ffffff;
-  --chart-bg:#0e0e1e;--chart-grid:#22223a;--chart-text:#8080b8;--chart-line:#c8c8f0;
+  --chart-bg:#0e0e1e;
 }
 [data-theme="light"]{
   --bg:#f2f1ec;--panel:#ffffff;--surface:#eeeaf8;
@@ -36,7 +36,7 @@
   --tbl-gap:rgba(0,0,0,0.18);
   --tbl-bg:#ffffff;
   --today-ring:#1a1a3a;
-  --chart-bg:#ffffff;--chart-grid:#e0e0f0;--chart-text:#7070a8;--chart-line:#3030a0;
+  --chart-bg:#ffffff;
 }
 
 html{font-size:14px;background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',system-ui,sans-serif;transition:background .2s,color .2s}
@@ -118,7 +118,7 @@ input.rain-in{background:transparent;border:none;border-bottom:2px solid #38bdf8
 /* Table caption */
 .tbl-caption{font-size:.9rem;color:var(--dim);letter-spacing:.02em;
   margin-bottom:8px;padding:0 2px;line-height:1.6}
-.caption-county{display:block;font-size:.78rem;color:var(--muted);margin-top:1px;
+#caption-county{display:block;font-size:.78rem;color:var(--muted);margin-top:1px;
   font-family:'IBM Plex Mono',monospace}
 
 /* Hide number input spinners — all browsers */
@@ -175,9 +175,6 @@ details.tbl-details summary:hover{color:var(--text);border-color:var(--border-hi
 details.tbl-details[open] summary{border-radius:10px 10px 0 0;border-bottom-color:var(--border)}
 .tbl-details-inner{border:1px solid var(--border);border-top:none;
   border-radius:0 0 10px 10px;padding:12px 12px 4px;background:var(--panel)}
-.tbl-today-val{font-family:'IBM Plex Mono',monospace;color:var(--accent);
-  font-weight:700;margin-left:8px;font-size:.9rem;text-transform:none;letter-spacing:0}
-
 /* ═══ TABLE ════════════════════════════════════════════════ */
 .tbl-outer{overflow-x:auto;margin-bottom:18px;border-radius:9px;
   border:2px solid var(--border-hi)}
@@ -284,7 +281,7 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
   <div class="logo">
     <h1>ET7</h1>
     <p>Weekly irrigation estimation</p>
-    <p>Soil Water Processes Lab · Kansas State University</p>
+    <p>Soil Water Processes Lab · Agronomy · Kansas State University</p>
   </div>
   <div class="hdr-r">
     <select class="ctrl" id="state-sel" onchange="onStateChange()" style="min-width:120px">
@@ -319,9 +316,9 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
 <!-- WEATHER ROW -->
 <div class="wx-row">
   <span class="wx-label">This season:</span>
-  <button class="wx-btn wx-c" id="wx-0" onclick="setWeather(0)">❄ Cooler<span class="wx-sub">−10% ET</span></button>
-  <button class="wx-btn active" id="wx-1" onclick="setWeather(1)">⛅ Typical<span class="wx-sub">Average year</span></button>
-  <button class="wx-btn wx-w" id="wx-2" onclick="setWeather(2)">☀ Warmer<span class="wx-sub">+10% ET</span></button>
+  <button class="wx-btn wx-c" id="wx-0" onclick="setWeather(0)">❄ Cooler<span class="wx-sub">~25th pct.</span></button>
+  <button class="wx-btn active" id="wx-1" onclick="setWeather(1)">⛅ Typical<span class="wx-sub">Median</span></button>
+  <button class="wx-btn wx-w" id="wx-2" onclick="setWeather(2)">☀ Warmer<span class="wx-sub">~75th pct.</span></button>
 </div>
 
 <!-- CHART -->
@@ -379,7 +376,7 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
   <div class="cp-top">
     <div class="fld crop-field">
       <span class="fld-lbl">Crop</span>
-      <select class="csel" id="crop-sel" onchange="onCropChange()"></select>
+      <select id="crop-sel" onchange="onCropChange()"></select>
     </div>
   </div>
 
@@ -403,7 +400,7 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
 <details class="tbl-details">
   <summary>Details: Reference ET for each day of the year</summary>
   <div class="tbl-details-inner">
-    <div class="tbl-caption">Typical weekly ET₀ (short-grass) — <span id="caption-county"></span></div>
+    <div class="tbl-caption">Typical weekly ET₀ - Reference Grass<span id="caption-county"></span></div>
     <div class="tbl-outer">
       <table id="et-table">
         <thead><tr id="thead-r"></tr></thead>
@@ -428,7 +425,7 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
 
 
 
-<footer id="footer">ET7 · KSU Soil Water Processes Lab · Climate data: GRIDMET</footer>
+<footer id="footer">ET7 · KSU Soil Water Processes Lab, Agronomy · Climate data: GRIDMET</footer>
 </div><!-- .app -->
 
 <script>
@@ -440,6 +437,7 @@ const MDAYS  = [31,28,31,30,31,30,31,31,30,31,30,31];
 // County list is derived from ks_data.json keys at runtime
 
 // ET data populated at runtime from ks_data.json
+// etStore[county] = { med:[], p25:[], p75:[], labels:[] } — 365 values in in/week
 const etStore = {};
 
 // ═══════════════════════════════════════════════════════════
@@ -453,7 +451,6 @@ const CROPS = {
   corn_full: {
     name:'Corn',
     winterCrop: false, 
-    description:'Full season · typical Kansas',
     dateLabel:'Planting Date', defaultDate:'04-15',
     stages:[
       {dap:0,   label:'Plant.', kcb:0.15},
@@ -474,7 +471,6 @@ const CROPS = {
   soybean: {
     name:'Soybean',
     winterCrop: false, 
-    description:'Indeterminate varieties · Groups III–V',
     dateLabel:'Planting Date', defaultDate:'05-20',
     stages:[
       {dap:0,   label:'Plant.', kcb:0.15},
@@ -494,7 +490,6 @@ const CROPS = {
 winterWheat: {
   name:'Winter Wheat',
   winterCrop: true,
-  description:'Hard red winter wheat, typical of the southern Great Plains',
   dateLabel:'Seeding Date', defaultDate:'10-10',
   stages:[
     {dap:0,   label:'Plant.',  kcb:0.15},
@@ -514,7 +509,6 @@ winterWheat: {
   sorghum: {
     name:'Grain Sorghum',
     winterCrop: false,
-    description:'Full-season grain sorghum',
     dateLabel:'Planting Date', defaultDate:'06-01',
     stages:[
       {dap:0,   label:'Plant.',  kcb:0.15},
@@ -534,7 +528,6 @@ winterWheat: {
   sunflower: {
     name:'Sunflower',
     winterCrop: false,
-    description:'Oilseed sunflower · standard season',
     dateLabel:'Planting Date', defaultDate:'06-01',
     stages:[
       {dap:0,   label:'Plant.', kcb:0.15},
@@ -563,7 +556,8 @@ const STATES = {
   // CO: { label:'Colorado', file:'co_data.json' },
 };
 
-const WX = [0.90, 1.00, 1.10];
+// wxIdx: 0=cooler (p25), 1=typical (med), 2=warmer (p75)
+// Selects which percentile is used for today's ETo card and chart marker
 
 // ═══════════════════════════════════════════════════════════
 //  STATE
@@ -634,11 +628,12 @@ function currentKcb(){
   return kcbAtDap(S.crop, dap);
 }
 
-function getETo(m,d){
-  const rows = etStore[S.county];
-  if(!rows) return null;
-  const v = rows[m]?.[d];
-  return v != null ? v * WX[S.wxIdx] : null;
+function getETo(m, d){
+  // Returns today's ET from the percentile selected by wxIdx
+  const c = etStore[S.county]; if(!c) return null;
+  const doy = getDOY(m, d);  // 1-based
+  const arr = S.wxIdx===0 ? c.p25 : S.wxIdx===2 ? c.p75 : c.med;
+  return arr[doy - 1] ?? null;
 }
 
 function fmt(v){ if(v==null) return '—'; return S.unit==='mm' ? (v*25.4).toFixed(1) : v.toFixed(2); }
@@ -655,28 +650,22 @@ async function fetchCountyData(stateKey){
     if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const data = await resp.json();
     const counties = data.counties || {};
+    // Store shared DOY and label arrays on etStore meta
+    etStore.__doy    = data.doy    || [];
+    etStore.__labels = data.label  || [];
     Object.entries(counties).forEach(([name, county])=>{
-      if(!county.daily) return;
-      // daily stored in mm/week → convert to in/week, reshape into [month][day] grid
-      const monthly = [];
-      let i = 0;
-      for(let m=0; m<12; m++){
-        const days = [];
-        for(let d=0; d<MDAYS[m]; d++){
-          const v = county.daily[i++];
-          days.push(v != null ? v / 25.4 : null);
-        }
-        monthly.push(days);
-      }
-      etStore[name] = monthly;
+      // Convert mm/week → in/week for each percentile array
+      etStore[name] = {
+        med: county.med.map(v => v != null ? v / 25.4 : null),
+        p25: county.p25.map(v => v != null ? v / 25.4 : null),
+        p75: county.p75.map(v => v != null ? v / 25.4 : null),
+      };
     });
     const names = Object.keys(counties);
-    // Only default to first county if no valid saved selection
     if(names.length && (!S.county || !etStore[S.county])) S.county = names[0];
     buildCountyDropdown(names);
   } catch(err){
     showLoadError(err);
-    // Don't throw — error banner is shown, let init continue gracefully
   }
 }
 
@@ -728,7 +717,8 @@ function toggleTheme(){
   const isDark=html.dataset.theme==='dark';
   html.dataset.theme=isDark?'light':'dark';
   document.getElementById('theme-btn').textContent=isDark?'🌙':'☀️';
-  renderChart(); // replot with new colors
+  drawKcbCurve();
+  renderChart();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -830,7 +820,7 @@ function drawKcbCurve(){
 
   // ── PHENOLOGICAL STAGE LINES (behind curve) ──────────────
   const stages = crop.stages;
-  const rowY = [KP.t - 6, KP.t - 6];
+  const rowY = [KP.t - 5, KP.t - 30];
   stages.forEach((st, i) => {
     if(st.dap < 0 || st.dap > total) return;
     const x = xS(st.dap);
@@ -967,16 +957,17 @@ function onKcbNumInput(){
 //  INFO CARDS
 // ═══════════════════════════════════════════════════════════
 function renderCards(){
-  const eto = getETo(T_MON, T_DAY-1);
+  const eto = getETo(T_MON, T_DAY);
   const kcb = currentKcb();
   const etc = (eto!=null && kcb!=null) ? eto*kcb : null;
   const rain = parseFloat(document.getElementById('rain-in').value)||0;
-  const irr  = etc!=null ? Math.max(0, parseFloat(fmt(etc)) - rain) : null;
+  const irr  = etc!=null ? Math.max(0, etc - rain) : null;
   const dp=S.unit==='mm'?1:2, u=S.unit==='mm'?'mm':'in';
 
-  // Reference ET
+  // Reference ET — show county in subtitle
   document.getElementById('c-eto').textContent = fmtU(eto);
-  document.getElementById('c-eto-sub').textContent = 'Past 7 days';
+  const countyLabel = S.county ? `${S.county} County` : 'select a county';
+  document.getElementById('c-eto-sub').textContent = `${countyLabel} · past 7 days`;
 
   // Kcb — update input and header value only when not focused
   const kcbInput = document.getElementById('kcb-num');
@@ -1014,6 +1005,7 @@ function renderCards(){
 //  TABLE
 // ═══════════════════════════════════════════════════════════
 function renderTable(){
+  const c = etStore[S.county]; if(!c) return;
   const mn=0.25, mx=1.80;
   const thead=document.getElementById('thead-r');
   thead.innerHTML='<th class="day-th">Day</th>';
@@ -1027,11 +1019,12 @@ function renderTable(){
     const td0=document.createElement('td'); td0.className='day-td'; td0.textContent=d; tr.appendChild(td0);
     for(let m=0;m<12;m++){
       const td=document.createElement('td'); td.className='et-cell';
-      const raw=d<=MDAYS[m] ? (etStore[S.county]?.[m]?.[d-1]??null) : null;
+      if(d>MDAYS[m]){td.classList.add('empty');tr.appendChild(td);continue;}
+      const doy = getDOY(m, d);  // 1-based
+      const raw = c.med[doy - 1];  // table always shows median
       if(raw==null){td.classList.add('empty');tr.appendChild(td);continue;}
-      const v=raw*WX[S.wxIdx];
-      const dv=S.unit==='mm'?v*25.4:v;
-      const {bg,fg}=cellStyle(v,mn,mx);
+      const dv = S.unit==='mm' ? raw*25.4 : raw;
+      const {bg,fg}=cellStyle(raw,mn,mx);
       td.style.backgroundColor=bg; td.style.color=fg;
       td.textContent=S.unit==='mm'?dv.toFixed(1):dv.toFixed(2);
       if(m===T_MON) td.classList.add('today-col-cell');
@@ -1051,71 +1044,84 @@ function renderTable(){
 //  PLOTLY CHART
 // ═══════════════════════════════════════════════════════════
 function renderChart(){
-  const rows=etStore[S.county]; if(!rows) return;
-  const wx=WX[S.wxIdx], mul=S.unit==='mm'?25.4:1;
-  const ul=S.unit==='mm'?'mm/week':'in/week';
-  // Build weekly from daily
-  const daily=[]; for(let m=0;m<12;m++) for(let d=0;d<MDAYS[m];d++) daily.push(rows[m]?.[d]??null);
-  const wks=[],meds=[],q1=[],q3=[];
-  for(let w=1;w<=52;w++){
-    const s=(w-1)*7,e=Math.min(w*7,365);
-    const vals=daily.slice(s,e).filter(v=>v!=null);
-    const avg=vals.reduce((a,b)=>a+b,0)/vals.length;
-    const sf=0.09+0.07*Math.sin((w/52)*Math.PI*0.9);
-    wks.push(w); meds.push(avg*wx*mul);
-    q1.push(avg*(1-sf)*wx*mul); q3.push(avg*(1+sf)*wx*mul);
-  }
-  const todayWk=Math.min(52,Math.ceil(getDOY(T_MON,T_DAY)/7));
-  const isDark=document.documentElement.dataset.theme==='dark';
-  const bg=isDark?'#0e0e1e':'#ffffff';
-  const grid=isDark?'rgba(130,130,200,0.15)':'#e8e8f4';
-  const tickColor=isDark?'#a0a0d8':'#5050a0';       // bright enough to read
-  const axisTitle=isDark?'#c0c0e8':'#3030a0';        // slightly brighter than ticks
-  const lc=isDark?'#d8d8f8':'#2020c0';               // median line
-  const maxY=S.unit==='mm'?55:2.5;
+  const c = etStore[S.county]; if(!c) return;
+  const mul = S.unit==='mm' ? 25.4 : 1;
+  const ul  = S.unit==='mm' ? 'mm/week' : 'in/week';
+  const todayDOY = getDOY(T_MON, T_DAY);
 
+  // Build DOY x-axis using shared labels if available, else generate
+  const labels = etStore.__labels?.length === 365
+    ? etStore.__labels
+    : Array.from({length:365}, (_,i)=>`DOY ${i+1}`);
+
+  const med = c.med.map(v => v != null ? v*mul : null);
+  const p25 = c.p25.map(v => v != null ? v*mul : null);
+  const p75 = c.p75.map(v => v != null ? v*mul : null);
+
+  // Today marker uses the percentile selected by wxIdx
+  const markerArr = S.wxIdx===0 ? p25 : S.wxIdx===2 ? p75 : med;
+  const markerY   = markerArr[todayDOY - 1];
+
+  const isDark=document.documentElement.dataset.theme==='dark';
+  const bg        = isDark?'#0e0e1e':'#ffffff';
+  const grid      = isDark?'rgba(130,130,200,0.15)':'#e8e8f4';
+  const tickColor = isDark?'#a0a0d8':'#5050a0';
+  const axisTitle = isDark?'#c0c0e8':'#3030a0';
+  const lc        = isDark?'#d8d8f8':'#2020c0';
+  const maxY      = S.unit==='mm' ? 55 : 2.5;
   const chartFontSz = window.innerWidth < 500 ? 10 : 12;
   const axisTitleSz = window.innerWidth < 500 ? 11 : 13;
+  const dp = S.unit==='mm' ? 1 : 2;
 
-  const traces=[
-    {x:[...wks,...wks.slice().reverse()],y:[...q3,...q1.slice().reverse()],
-      fill:'toself',fillcolor:isDark?'rgba(160,140,220,.18)':'rgba(80,80,200,.10)',
-      line:{color:'transparent'},name:'25th–75th pct.',hoverinfo:'skip',showlegend:true},
-    {x:wks,y:meds,mode:'lines',line:{color:lc,width:2.5},name:'Typical (median)',
-      hovertemplate:`Week %{x}<br>Reference ET: %{y:.${S.unit==='mm'?1:2}f} ${ul}<extra></extra>`},
-    {x:[todayWk],y:[meds[todayWk-1]],mode:'markers',
-      marker:{color:'#fff',size:11,symbol:'circle',line:{color:bg,width:2.5}},
-      name:`Today (wk ${todayWk})`,
-      hovertemplate:`Week ${todayWk} (today)<br>Reference ET: %{y:.${S.unit==='mm'?1:2}f} ${ul}<extra></extra>`}
-  ];
+  // Band: p25–p75
+  const band={
+    x:[...labels,...labels.slice().reverse()],
+    y:[...p75,...p25.slice().reverse()],
+    fill:'toself',
+    fillcolor:isDark?'rgba(160,140,220,.18)':'rgba(80,80,200,.10)',
+    line:{color:'transparent'},name:'25th–75th pct.',hoverinfo:'skip',showlegend:true};
+
+  // Median line
+  const medLine={
+    x:labels, y:med, mode:'lines',
+    line:{color:lc,width:2.5}, name:'Typical (median)',
+    hovertemplate:`%{x}<br>ET₀: %{y:.${dp}f} ${ul}<extra></extra>`};
+
+  // Today marker
+  const wxLabel = S.wxIdx===0?'Cooler (p25)':S.wxIdx===2?'Warmer (p75)':'Typical (median)';
+  const todayMark={
+    x:[labels[todayDOY-1]], y:[markerY], mode:'markers',
+    marker:{color:'#fff',size:11,symbol:'circle',line:{color:bg,width:2.5}},
+    name:`Today · ${wxLabel}`,
+    hovertemplate:`Today (DOY ${todayDOY})<br>ET₀: %{y:.${dp}f} ${ul}<extra></extra>`};
+
   const chartH = window.innerWidth < 500
-    ? Math.round(window.innerWidth * 0.55)
-    : 340;
+    ? Math.round(window.innerWidth * 0.55) : 340;
 
   const layout={
-    height: chartH,
-    paper_bgcolor:bg, plot_bgcolor:bg,
+    height:chartH, paper_bgcolor:bg, plot_bgcolor:bg,
     font:{color:tickColor, family:"'IBM Plex Sans',sans-serif", size:chartFontSz},
     xaxis:{
-      title:{text:'Week of the Year', font:{size:axisTitleSz, color:axisTitle}, standoff:6},
+      title:{text:'Day of Year', font:{size:axisTitleSz,color:axisTitle}, standoff:6},
       gridcolor:grid, gridwidth:1, zeroline:false,
-      tickmode:'array', tickvals:[1,9,17,25,33,41,49],
-      range:[.5,52.5], tickfont:{size:chartFontSz,color:tickColor},
-      showline:false, ticklen:4
-    },
+      tickmode:'array',
+      tickvals:[1,32,60,91,121,152,182,213,244,274,305,335],
+      ticktext:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+      range:[0.5,365.5], tickfont:{size:chartFontSz,color:tickColor},
+      showline:false, ticklen:4},
     yaxis:{
-      title:{text:`Reference ET (${ul})`, font:{size:axisTitleSz, color:axisTitle}, standoff:6},
+      title:{text:`Reference ET (${ul})`, font:{size:axisTitleSz,color:axisTitle}, standoff:6},
       gridcolor:grid, gridwidth:1, zeroline:false, range:[0,maxY],
       tickfont:{size:chartFontSz,color:tickColor},
-      tickformat:S.unit==='mm'?'.0f':'.1f', showline:false, ticklen:4
-    },
+      tickformat:S.unit==='mm'?'.0f':'.1f', showline:false, ticklen:4},
     legend:{x:.01,y:.98,bgcolor:'rgba(0,0,0,0)',font:{size:chartFontSz,color:tickColor},
       bordercolor:isDark?'rgba(130,130,200,.25)':'#d0d0e8',borderwidth:1},
-    margin:{t:12,b:window.innerWidth<500?40:50,l:window.innerWidth<500?52:62,r:12}, hovermode:'x unified',
-    shapes:[{type:'line',x0:todayWk,x1:todayWk,y0:0,y1:maxY,
+    margin:{t:12,b:window.innerWidth<500?40:50,l:window.innerWidth<500?52:62,r:12},
+    hovermode:'x unified',
+    shapes:[{type:'line',x0:labels[todayDOY-1],x1:labels[todayDOY-1],y0:0,y1:maxY,
       line:{color:isDark?'rgba(255,255,255,.22)':'rgba(0,0,80,.18)',width:1.5,dash:'dot'}}]
   };
-  Plotly.newPlot('chart',traces,layout,{displayModeBar:false,responsive:true});
+  Plotly.newPlot('chart',[band,medLine,todayMark],layout,{displayModeBar:false,responsive:true});
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1198,9 +1204,8 @@ function onCountyChange(){
   S.county = document.getElementById('county-sel').value;
   const stLabel = STATES[S.state]?.label || S.state;
   document.getElementById('footer').textContent =
-    `ET7 · ${S.county} County, ${stLabel} · KSU Soil Water Processes Lab · Climate data: GRIDMET`;
+    `ET7 · ${S.county} County, ${stLabel} · KSU Soil Water Processes Lab, Agronomy · Climate data: GRIDMET`;
   document.getElementById('caption-county').textContent = `${S.county} County, ${stLabel}`;
-  document.getElementById('c-eto-sub').textContent = 'Past 7 days';
   saveState();
   render();
 }
@@ -1226,17 +1231,13 @@ async function init(){
     cropSel.appendChild(o);
   });
 
-  // Apply restored crop to UI
-  const initialCrop = CROPS[S.crop];
-
   // Unit toggle
   document.getElementById('btn-in').classList.toggle('active', S.unit==='in');
   document.getElementById('btn-mm').classList.toggle('active', S.unit==='mm');
 
-  // Weather buttons
-  [0,1,2].forEach(j=>document.getElementById(`wx-${j}`).classList.toggle('active',j===S.wxIdx));
+  // Weather buttons — set full className to preserve wx-c/wx-w color classes
   document.getElementById('wx-0').className='wx-btn wx-c'+(S.wxIdx===0?' active':'');
-  document.getElementById('wx-1').className='wx-btn'+(S.wxIdx===1?' active':'');
+  document.getElementById('wx-1').className='wx-btn'       +(S.wxIdx===1?' active':'');
   document.getElementById('wx-2').className='wx-btn wx-w'+(S.wxIdx===2?' active':'');
 
   // State selector
@@ -1259,9 +1260,8 @@ async function init(){
     document.getElementById('county-sel').value = S.county;
     const stLabel = STATES[S.state]?.label || S.state;
     document.getElementById('footer').textContent =
-      `ET7 · ${S.county} County, ${stLabel} · KSU Soil Water Processes Lab · Climate data: GRIDMET`;
+      `ET7 · ${S.county} County, ${stLabel} · KSU Soil Water Processes Lab, Agronomy · Climate data: GRIDMET`;
     document.getElementById('caption-county').textContent = `${S.county} County, ${stLabel}`;
-    document.getElementById('c-eto-sub').textContent = 'Past 7 days';
   }
 
   // Restore rain input

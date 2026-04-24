@@ -4,8 +4,8 @@
 //   - Data files (ks_data.json, etc.)  → Network-first, fall back to cache
 //   - Everything else                  → Network with cache fallback
 
-const CACHE_NAME    = 'et7-v1';
-const DATA_CACHE    = 'et7-data-v1';
+const CACHE_NAME    = 'et7-v2';
+const DATA_CACHE = 'et7-data-v2';
 
 // App shell — cached on install, served from cache first
 const SHELL_URLS = [
@@ -89,7 +89,8 @@ async function cacheFirstWithUpdate(request){
   const cached = await caches.match(request);
   const fetchPromise = fetch(request).then(networkResponse => {
     if(networkResponse.ok){
-      caches.open(CACHE_NAME).then(cache => cache.put(request, networkResponse.clone()));
+      const toCache = networkResponse.clone(); // clone BEFORE body is consumed
+      caches.open(CACHE_NAME).then(cache => cache.put(request, toCache));
     }
     return networkResponse;
   }).catch(() => null);
