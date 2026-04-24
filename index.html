@@ -346,7 +346,7 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
       <div class="clbl">Crop coefficient K<sub>c</sub></div>
       <div class="csub">Drag curve or edit by hand</div>
     </div>
-    <input class="kcb-num" type="number" id="kcb-num" min="0" max="1.50" step="0.01"
+    <input class="kcb-num" type="number" id="kcb-num" min="0" max="1.50" step="0.01" inputmode="decimal"
            oninput="onKcbNumInput()">
   </div>
   <div class="card">
@@ -362,7 +362,7 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
       <div class="csub">Past 7 days. Edit by hand</div>
     </div>
     <div class="rain-row">
-      <input class="rain-in" type="number" id="rain-in" min="0.0" step="0.01" value="0.0"
+      <input class="rain-in" type="number" id="rain-in" min="0.0" step="0.01" value="0.0" inputmode="decimal"
              oninput="renderCards();saveState()">
       <span class="rain-unit-inline" id="rain-unit-inline">in</span>
     </div>
