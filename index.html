@@ -820,7 +820,7 @@ function drawKcbCurve(){
 
   // ── PHENOLOGICAL STAGE LINES (behind curve) ──────────────
   const stages = crop.stages;
-  const rowY = [KP.t - 5, KP.t - 30];
+  const rowY = [KP.t - 5, KP.t - 5];
   stages.forEach((st, i) => {
     if(st.dap < 0 || st.dap > total) return;
     const x = xS(st.dap);
