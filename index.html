@@ -296,7 +296,7 @@ footer{margin-top:24px;text-align:center;font-size:.7rem;color:var(--muted);lett
     <div class="logo">
       <h1>ET7</h1>
       <p>Weekly crop ET and irrigation estimates. v1.0</p>
-      <p>Soil Water Processes Lab · Agronomy · Kansas State University</p>
+      <p>Soil Water Processes Lab · Agronomy · K-State</p>
     </div>
     <div class="hdr-icons">
       <button class="icon-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle light/dark">🌙</button>
@@ -654,8 +654,8 @@ function getETo(m, d){
   return arr[doy - 1] ?? null;
 }
 
-function fmt(v){ if(v==null) return '—'; return S.unit==='mm' ? (v*25.4).toFixed(1) : v.toFixed(2); }
-function fmtU(v){ return v!=null ? fmt(v)+' '+(S.unit==='mm'?'mm':'in') : '—'; }
+function fmt(v){ if(v==null) return '—'; return S.unit==='in' ? (v/25.4).toFixed(2) : v.toFixed(1); }
+function fmtU(v){ return v!=null ? fmt(v)+' '+(S.unit==='in'?'in':'mm') : '—'; }
 
 // ═══════════════════════════════════════════════════════════
 //  DATA LOADER — fetches state JSON on page load / state change
@@ -672,11 +672,11 @@ async function fetchCountyData(stateKey){
     etStore.__doy    = data.doy    || [];
     etStore.__labels = data.label  || [];
     Object.entries(counties).forEach(([name, county])=>{
-      // Convert mm/week → in/week for each percentile array
+      // Store values in mm — the native unit of the JSON
       etStore[name] = {
-        med: county.med.map(v => v != null ? v / 25.4 : null),
-        p25: county.p25.map(v => v != null ? v / 25.4 : null),
-        p75: county.p75.map(v => v != null ? v / 25.4 : null),
+        med: county.med.map(v => v ?? null),
+        p25: county.p25.map(v => v ?? null),
+        p75: county.p75.map(v => v ?? null),
       };
     });
     const names = Object.keys(counties);
@@ -769,10 +769,10 @@ function renderLegend(mn,mx){
     const [r,g,b]=magmaRGB(x/w);
     ctx.fillStyle=`rgb(${r},${g},${b})`; ctx.fillRect(x,0,1,11);
   }
-  const mul=S.unit==='mm'?25.4:1, dp=S.unit==='mm'?1:2;
+  const mul=S.unit==='in'?1/25.4:1, dp=S.unit==='in'?2:1;
   document.getElementById('l-min').textContent=(mn*mul).toFixed(dp);
   document.getElementById('l-max').textContent=(mx*mul).toFixed(dp);
-  document.getElementById('l-unit').textContent=S.unit==='mm'?'mm/week':'in/week';
+  document.getElementById('l-unit').textContent=S.unit==='in'?'in/week':'mm/week';
   ['lt0','lt1','lt2','lt3','lt4'].forEach((id,i)=>{
     document.getElementById(id).textContent=((mn+(mx-mn)*(i/4))*mul).toFixed(dp);
   });
@@ -978,11 +978,15 @@ function renderCards(){
   const eto = getETo(T_MON, T_DAY);
   const kcb = currentKcb();
   const etc = (eto!=null && kcb!=null) ? eto*kcb : null;
-  const rain = parseFloat(document.getElementById('rain-in').value)||0;
-  const irr  = etc!=null ? Math.max(0, etc - rain) : null;
-  const dp=S.unit==='mm'?1:2, u=S.unit==='mm'?'mm':'in';
 
-  // Reference ET — show county in subtitle
+  // Rain: input is in display units → convert to mm for all calculation
+  const rainDisplay = parseFloat(document.getElementById('rain-in').value)||0;
+  const rainMm = S.unit==='in' ? rainDisplay*25.4 : rainDisplay;
+
+  // irr in mm — fmtU handles conversion to inches for display
+  const irr = etc!=null ? Math.max(0, etc - rainMm) : null;
+
+  // Reference ET
   document.getElementById('c-eto').textContent = fmtU(eto);
   const countyLabel = S.county ? `${S.county} County` : 'select a county';
   document.getElementById('c-eto-sub').textContent = `${countyLabel} · past 7 days`;
@@ -1000,17 +1004,17 @@ function renderCards(){
     ? `ET × Kcb ${kcb.toFixed(2)}`
     : 'ET × Kcb';
 
-  // Rain unit
+  // Rain unit label
   document.getElementById('rain-unit-inline').textContent = S.unit==='mm' ? 'mm' : 'in';
 
-  // Irrigation
+  // Irrigation — use fmtU for all values so unit conversion is consistent
   const irrEl  = document.getElementById('c-irr');
   const irrSub = document.getElementById('c-irr-sub');
   if(irr!=null){
     irrEl.className = 'cval '+(irr>0?'c-irr':'c-none');
-    irrEl.textContent = irr>0 ? irr.toFixed(dp)+' '+u : 'None needed';
+    irrEl.textContent = irr>0 ? fmtU(irr) : 'None needed';
     irrSub.textContent = irr>0
-      ? `${fmtU(etc)} − ${rain.toFixed(dp)} ${u}`
+      ? `${fmtU(etc)} − ${fmtU(rainMm)}`
       : 'Precip ≥ crop ET';
   } else {
     irrEl.className = 'cval c-none';
@@ -1024,7 +1028,7 @@ function renderCards(){
 // ═══════════════════════════════════════════════════════════
 function renderTable(){
   const c = etStore[S.county]; if(!c) return;
-  const mn=0.25, mx=1.80;
+  const mn=6.5, mx=46.0;  // mm/week range (≈ 0.25–1.80 in/week)
   const thead=document.getElementById('thead-r');
   thead.innerHTML='<th class="day-th">Day</th>';
   MONTHS.forEach((m,i)=>{
@@ -1039,12 +1043,12 @@ function renderTable(){
       const td=document.createElement('td'); td.className='et-cell';
       if(d>MDAYS[m]){td.classList.add('empty');tr.appendChild(td);continue;}
       const doy = getDOY(m, d);  // 1-based
-      const raw = c.med[doy - 1];  // table always shows median
+      const raw = c.med[doy - 1];  // mm — table always shows median
       if(raw==null){td.classList.add('empty');tr.appendChild(td);continue;}
-      const dv = S.unit==='mm' ? raw*25.4 : raw;
+      const dv = S.unit==='in' ? (raw/25.4) : raw;
       const {bg,fg}=cellStyle(raw,mn,mx);
       td.style.backgroundColor=bg; td.style.color=fg;
-      td.textContent=S.unit==='mm'?dv.toFixed(1):dv.toFixed(2);
+      td.textContent=S.unit==='in'?dv.toFixed(2):dv.toFixed(1);
       if(m===T_MON) td.classList.add('today-col-cell');
       if(m===T_MON&&d===T_DAY) td.classList.add('today-cell');
       tr.appendChild(td);
@@ -1063,8 +1067,10 @@ function renderTable(){
 // ═══════════════════════════════════════════════════════════
 function renderChart(){
   const c = etStore[S.county]; if(!c) return;
-  const mul = S.unit==='mm' ? 25.4 : 1;
-  const ul  = S.unit==='mm' ? 'mm/week' : 'in/week';
+  const mul = S.unit==='in' ? 1/25.4 : 1;
+  const ul  = S.unit==='in' ? 'in/week' : 'mm/week';
+  const dp  = S.unit==='in' ? 2 : 1;
+  const maxY = S.unit==='in' ? 2.5 : 55;
   const todayDOY = getDOY(T_MON, T_DAY);
 
   // Build DOY x-axis using shared labels if available, else generate
@@ -1086,10 +1092,8 @@ function renderChart(){
   const tickColor = isDark?'#a0a0d8':'#5050a0';
   const axisTitle = isDark?'#c0c0e8':'#3030a0';
   const lc        = isDark?'#d8d8f8':'#2020c0';
-  const maxY      = S.unit==='mm' ? 55 : 2.5;
   const chartFontSz = window.innerWidth < 500 ? 10 : 12;
   const axisTitleSz = window.innerWidth < 500 ? 11 : 13;
-  const dp = S.unit==='mm' ? 1 : 2;
 
   // Band: p25–p75
   const band={
@@ -1152,7 +1156,9 @@ function saveState(){
       state:      S.state,
       county:     S.county,
       crop:       S.crop,
-      rain:       parseFloat(document.getElementById('rain-in').value)||0,
+      // Always save rain in mm regardless of display unit
+      rain: (()=>{ const v=parseFloat(document.getElementById('rain-in').value)||0;
+                   return S.unit==='in' ? v*25.4 : v; })(),
       kcbOverride:S.kcbOverride,
       kcbDap:     S.kcbDap,
       kcbManual:  S.kcbManual,
@@ -1184,13 +1190,15 @@ function loadState(){
 //  EVENT HANDLERS
 // ═══════════════════════════════════════════════════════════
 function setUnit(u){
-  S.unit=u;
+  const prev = S.unit;  // capture before changing
+  S.unit = u;
   document.getElementById('btn-in').classList.toggle('active',u==='in');
   document.getElementById('btn-mm').classList.toggle('active',u==='mm');
-  // convert rain
-  const ri=document.getElementById('rain-in');
-  const v=parseFloat(ri.value)||0;
-  ri.value=u==='mm'?(v*25.4).toFixed(1):(v/25.4).toFixed(2);
+  // Convert rain input from previous display unit to new display unit
+  const ri = document.getElementById('rain-in');
+  const v = parseFloat(ri.value)||0;
+  if(prev==='in' && u==='mm') ri.value = (v*25.4).toFixed(1);
+  else if(prev==='mm' && u==='in') ri.value = (v/25.4).toFixed(2);
   saveState();
   render();
 }
@@ -1283,10 +1291,11 @@ async function init(){
     document.getElementById('caption-county').textContent = `${S.county} County, ${stLabel}`;
   }
 
-  // Restore rain input
-  if(saved?.rain){
+  // Restore rain — saved in mm, convert to display unit
+  if(saved?.rain != null){
     const ri = document.getElementById('rain-in');
-    ri.value = saved.unit==='mm' ? (saved.rain).toFixed(1) : (saved.rain).toFixed(2);
+    const rainMm = saved.rain;
+    ri.value = S.unit==='in' ? (rainMm/25.4).toFixed(2) : rainMm.toFixed(1);
   }
 
   // Kcb restore — if user had manually set it, honour the saved position;
