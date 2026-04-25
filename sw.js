@@ -7,17 +7,17 @@ const CACHE_NAME = 'et7-v1';
 const PRECACHE_URLS = [
   './index.html',
   './manifest.json',
-  './plotly-2.27.0.min.js',
+  './plotly-basic-2.27.0.min.js',
   './ks_data.json',
-  // Add future state files here:
-  // './ne_data.json',
-  // './co_data.json',
   './fonts/IBMPlexSans-Regular.ttf',
   './fonts/IBMPlexSans-SemiBold.ttf',
   './fonts/IBMPlexSans-Bold.ttf',
   './fonts/IBMPlexMono-Regular.ttf',
   './fonts/IBMPlexMono-SemiBold.ttf',
   './fonts/IBMPlexMono-Bold.ttf',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './favicon.ico',
 ];
 
 // ── INSTALL: pre-cache everything ────────────────────────────
