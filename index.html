@@ -336,9 +336,9 @@ function updateSummary(county){
   if(!DATA) return;
   var cd  = DATA.counties[county];
   var idx = todayDOYIndex();
-  var med = (cd.med[idx] / 25.4).toFixed(2);
-  var p25 = (cd.p25[idx] / 25.4).toFixed(2);
-  var p75 = (cd.p75[idx] / 25.4).toFixed(2);
+  var med = (cd.med[idx]).toFixed(2);
+  var p25 = (cd.p25[idx]).toFixed(2);
+  var p75 = (cd.p75[idx]).toFixed(2);
   var today = new Date();
   var start = new Date(today); start.setDate(start.getDate() - 6);
   document.getElementById('summary').innerHTML =
